@@ -1,0 +1,113 @@
+[
+  {
+    "id": "gemini-pro-premium",
+    "name": "Gemini 1.5 Pro (Premium)",
+    "provider": "Google",
+    "model": "gemini-1.5-pro",
+    "tier": "premium",
+    "isActive": true,
+    "priority": 1,
+    "apiKey": "AIzaSyCLJWOfkLrCqQLopTVmgOx1I8XO_mmqGa4"
+  },
+  {
+    "id": "moonshot-kimi",
+    "name": "Moonshot Kimi K2",
+    "provider": "Moonshot",
+    "model": "moonshotai/kimi-k2:free",
+    "tier": "free",
+    "isActive": true,
+    "priority": 1
+  },
+  {
+    "id": "openrouter-gpt4",
+    "name": "GPT-4 Turbo (OpenRouter)",
+    "provider": "OpenRouter",
+    "model": "openai/gpt-4-turbo",
+    "tier": "premium",
+    "isActive": true,
+    "priority": 2
+  },
+  {
+    "id": "openai-gpt4",
+    "name": "GPT-4",
+    "provider": "OpenAI",
+    "model": "openai/gpt-4",
+    "tier": "premium",
+    "isActive": true,
+    "priority": 3
+  },
+  {
+    "id": "claude-sonnet",
+    "name": "Claude 3.5 Sonnet",
+    "provider": "Anthropic",
+    "model": "anthropic/claude-3.5-sonnet",
+    "tier": "premium",
+    "isActive": false,
+    "priority": 4
+  },
+  {
+    "id": "gemini-flash",
+    "name": "Gemini 1.5 Flash",
+    "provider": "Google",
+    "model": "gemini-1.5-flash",
+    "tier": "free",
+    "isActive": true,
+    "priority": 2,
+    "apiKey": "AIzaSyCLJWOfkLrCqQLopTVmgOx1I8XO_mmqGa4"
+  },
+  {
+    "id": "openrouter-claude",
+    "name": "Claude 3.5 Sonnet (OpenRouter)",
+    "provider": "OpenRouter",
+    "model": "anthropic/claude-3.5-sonnet",
+    "tier": "free",
+    "isActive": true,
+    "priority": 3
+  },
+  {
+    "id": "glm-4-air",
+    "name": "GLM-4.5 Air",
+    "provider": "Z-AI",
+    "model": "z-ai/glm-4.5-air:free",
+    "tier": "free",
+    "isActive": true,
+    "priority": 4
+  },
+  {
+    "id": "openai-gpt35",
+    "name": "GPT-3.5 Turbo",
+    "provider": "OpenAI",
+    "model": "openai/gpt-3.5-turbo",
+    "tier": "free",
+    "isActive": true,
+    "priority": 5
+  },
+  {
+    "id": "claude-haiku",
+    "name": "Claude 3 Haiku",
+    "provider": "Anthropic",
+    "model": "anthropic/claude-3-haiku",
+    "tier": "free",
+    "isActive": true,
+    "priority": 6
+  },
+  {
+    "id": "gemini-pro",
+    "name": "Gemini 1.5 Pro",
+    "provider": "Google",
+    "model": "gemini-1.5-pro",
+    "tier": "free",
+    "isActive": true,
+    "priority": 7,
+    "apiKey": "AIzaSyCLJWOfkLrCqQLopTVmgOx1I8XO_mmqGa4"
+  },
+  {
+    "id": "llama-3.1-70b",
+    "name": "Llama 3.1 70B",
+    "provider": "Meta",
+    "model": "meta-llama/llama-3.1-70b-instruct",
+    "tier": "free",
+    "isActive": true,
+    "priority": 8
+  }
+]

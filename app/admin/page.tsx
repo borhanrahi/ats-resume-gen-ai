@@ -135,6 +135,7 @@ export default function AdminPage() {
   };
 
   const setPrimaryModel = async (modelId: string) => {
+    setLoading(true);
     try {
       const response = await fetch('/api/admin/models/set-primary', {
         method: 'POST',
@@ -142,14 +143,27 @@ export default function AdminPage() {
         body: JSON.stringify({ modelId }),
       });
 
-      if (response.ok) {
-        setMessage('Primary model updated successfully');
-        loadModels();
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        setMessage(result.message || 'Primary model updated successfully');
+        // Use the updated models from the response for immediate UI update
+        if (result.models) {
+          console.log('Updating models with response data:', result.models);
+          setModels(result.models);
+        } else {
+          // Fallback to loading models if not provided in response
+          console.log('No models in response, loading from API');
+          loadModels();
+        }
       } else {
-        setMessage('Failed to set primary model');
+        setMessage(result.error || 'Failed to set primary model');
       }
-    } catch {
+    } catch (error) {
+      console.error('Error setting primary model:', error);
       setMessage('Error setting primary model');
+    } finally {
+      setLoading(false);
     }
   };
 
