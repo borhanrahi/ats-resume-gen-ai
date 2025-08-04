@@ -19,6 +19,7 @@ const generateModelIcon = (provider: string): string => {
   const providerLower = provider.toLowerCase();
   
   // Common AI providers
+  if (providerLower.includes('openrouter')) return '🔀';
   if (providerLower.includes('openai') || providerLower.includes('gpt')) return '🤖';
   if (providerLower.includes('anthropic') || providerLower.includes('claude')) return '🧠';
   if (providerLower.includes('google') || providerLower.includes('gemini') || providerLower.includes('bard')) return '🔍';
@@ -49,6 +50,7 @@ const generateModelIcon = (provider: string): string => {
 const generateProviderColor = (provider: string): string => {
   const providerLower = provider.toLowerCase();
   
+  if (providerLower.includes('openrouter')) return 'from-indigo-500 to-purple-600';
   if (providerLower.includes('openai') || providerLower.includes('gpt')) return 'from-green-500 to-teal-600';
   if (providerLower.includes('anthropic') || providerLower.includes('claude')) return 'from-purple-500 to-pink-600';
   if (providerLower.includes('google') || providerLower.includes('gemini')) return 'from-blue-500 to-indigo-600';
@@ -122,7 +124,7 @@ export default function AddModelModal({ isOpen, onClose, onAddModel }: AddModelM
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-background border border-border rounded-lg w-full max-w-lg shadow-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-card border border-border rounded-lg w-full max-w-[1024px] shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex items-center space-x-3">
@@ -146,7 +148,7 @@ export default function AddModelModal({ isOpen, onClose, onAddModel }: AddModelM
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Preview */}
           <div className="flex items-center justify-center p-4 bg-muted/30 rounded-lg">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-4">
               <div className={`w-12 h-12 bg-gradient-to-br ${previewColor} rounded-lg flex items-center justify-center text-white text-lg font-bold shadow-lg`}>
                 {previewIcon}
               </div>
@@ -161,34 +163,45 @@ export default function AddModelModal({ isOpen, onClose, onAddModel }: AddModelM
             </div>
           </div>
 
-          {/* Model Name */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Model Name
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="e.g., GPT-4 Turbo"
-              className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"
-              required
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Model Name */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Model Name
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g., GPT-4 Turbo"
+                className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"
+                required
+              />
+            </div>
 
-          {/* Provider */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Provider
-            </label>
-            <input
-              type="text"
-              value={formData.provider}
-              onChange={(e) => handleProviderChange(e.target.value)}
-              placeholder="e.g., OpenAI, Anthropic, Google"
-              className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"
-              required
-            />
+            {/* Provider */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Provider
+              </label>
+              <select
+                value={formData.provider}
+                onChange={(e) => handleProviderChange(e.target.value)}
+                className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"
+                required
+              >
+                <option value="">Select Provider</option>
+                <option value="OpenRouter">OpenRouter (Main Provider)</option>
+                <option value="Google">Google (Gemini)</option>
+                <option value="OpenAI">OpenAI</option>
+                <option value="Anthropic">Anthropic</option>
+                <option value="Meta">Meta (Llama)</option>
+                <option value="Moonshot">Moonshot</option>
+                <option value="Z-AI">Z-AI</option>
+                <option value="Mistral">Mistral</option>
+                <option value="Custom">Custom</option>
+              </select>
+            </div>
           </div>
 
           {/* Model ID */}
@@ -204,8 +217,8 @@ export default function AddModelModal({ isOpen, onClose, onAddModel }: AddModelM
               className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground font-mono"
               required
             />
-            <p className="text-xs text-muted-foreground mt-1">
-              Use the exact model ID from OpenRouter
+            <p className="text-sm text-muted-foreground mt-1">
+              Use OpenRouter format: provider/model-name
             </p>
           </div>
 

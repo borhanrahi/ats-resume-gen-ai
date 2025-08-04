@@ -1,7 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // In-memory storage for demo (replace with database later)
-const modelConfigs = [
+export const modelConfigs = [
+  {
+    id: 'openrouter-gpt4',
+    name: 'GPT-4 Turbo (OpenRouter)',
+    provider: 'OpenRouter',
+    model: 'openai/gpt-4-turbo',
+    tier: 'premium' as const,
+    isActive: true,
+    priority: 1,
+  },
+  {
+    id: 'gemini-flash',
+    name: 'Gemini 1.5 Flash',
+    provider: 'Google',
+    model: 'gemini-1.5-flash',
+    tier: 'free' as const,
+    isActive: true,
+    priority: 2,
+    apiKey: 'AIzaSyCLJWOfkLrCqQLopTVmgOx1I8XO_mmqGa4',
+  },
+  {
+    id: 'openrouter-claude',
+    name: 'Claude 3.5 Sonnet (OpenRouter)',
+    provider: 'OpenRouter',
+    model: 'anthropic/claude-3.5-sonnet',
+    tier: 'free' as const,
+    isActive: true,
+    priority: 3,
+  },
   {
     id: 'moonshot-kimi',
     name: 'Moonshot Kimi K2',
@@ -9,7 +37,7 @@ const modelConfigs = [
     model: 'moonshotai/kimi-k2:free',
     tier: 'free' as const,
     isActive: true,
-    priority: 1,
+    priority: 4,
   },
   {
     id: 'glm-4-air',
@@ -18,7 +46,7 @@ const modelConfigs = [
     model: 'z-ai/glm-4.5-air:free',
     tier: 'free' as const,
     isActive: true,
-    priority: 2,
+    priority: 5,
   },
   {
     id: 'openai-gpt35',
@@ -27,7 +55,7 @@ const modelConfigs = [
     model: 'openai/gpt-3.5-turbo',
     tier: 'free' as const,
     isActive: true,
-    priority: 3,
+    priority: 6,
   },
   {
     id: 'claude-haiku',
@@ -36,7 +64,17 @@ const modelConfigs = [
     model: 'anthropic/claude-3-haiku',
     tier: 'free' as const,
     isActive: true,
-    priority: 4,
+    priority: 7,
+  },
+  {
+    id: 'gemini-pro-premium',
+    name: 'Gemini 1.5 Pro (Premium)',
+    provider: 'Google',
+    model: 'gemini-1.5-pro',
+    tier: 'premium' as const,
+    isActive: true,
+    priority: 8,
+    apiKey: 'AIzaSyCLJWOfkLrCqQLopTVmgOx1I8XO_mmqGa4',
   },
   {
     id: 'openai-gpt4',
@@ -45,7 +83,7 @@ const modelConfigs = [
     model: 'openai/gpt-4',
     tier: 'premium' as const,
     isActive: true,
-    priority: 1,
+    priority: 9,
   },
   {
     id: 'claude-sonnet',
@@ -54,7 +92,7 @@ const modelConfigs = [
     model: 'anthropic/claude-3.5-sonnet',
     tier: 'premium' as const,
     isActive: false,
-    priority: 2,
+    priority: 10,
   },
 ];
 

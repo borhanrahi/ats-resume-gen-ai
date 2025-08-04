@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText, Briefcase } from 'lucide-react';
+import { FileText, Briefcase, ArrowRight, CheckCircle } from 'lucide-react';
 
 interface AnalysisOptionsProps {
   onAnalysisClick: (type: 'normal' | 'job') => void;
@@ -8,83 +8,110 @@ interface AnalysisOptionsProps {
 
 export default function AnalysisOptions({ onAnalysisClick }: AnalysisOptionsProps) {
   return (
-    <section className="container-mobile py-12 md:py-16">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">
-          Choose Your Analysis Type
-        </h2>
+    <section className="container-mobile py-16 md:py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            Choose Your Analysis Type
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Select the type of analysis that best fits your needs and get personalized recommendations
+          </p>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Normal ATS Check */}
-          <div className="analysis-card p-6 md:p-8 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+          <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-card/50 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 cursor-pointer"
                onClick={() => onAnalysisClick('normal')}>
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mr-4">
-                <FileText className="w-6 h-6 text-primary" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            
+            <div className="relative p-8">
+              <div className="flex items-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                  <FileText className="w-8 h-8 text-primary-foreground" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-foreground">Normal ATS Check</h3>
+                  <p className="text-sm text-primary font-medium">Comprehensive Analysis</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold">Normal ATS Check</h3>
+              
+              <p className="text-muted-foreground mb-8 leading-relaxed">
+                Get a comprehensive ATS compatibility score with detailed recommendations 
+                for improving your resume format, structure, and content quality.
+              </p>
+              
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-primary mr-3 flex-shrink-0" />
+                  <span>ATS Compatibility Score (0-100)</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-primary mr-3 flex-shrink-0" />
+                  <span>Format & Structure Analysis</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-primary mr-3 flex-shrink-0" />
+                  <span>Grammar & Content Review</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-primary mr-3 flex-shrink-0" />
+                  <span>Actionable Improvement Tips</span>
+                </div>
+              </div>
+              
+              <button className="w-full bg-primary text-primary-foreground rounded-xl py-4 px-6 font-semibold hover:bg-primary/90 transition-all duration-300 flex items-center justify-center space-x-2 group-hover:shadow-lg">
+                <span>Start ATS Check</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+              </button>
             </div>
-            <p className="text-muted-foreground mb-6">
-              Get a comprehensive ATS compatibility score with detailed recommendations 
-              for improving your resume format, structure, and content.
-            </p>
-            <ul className="space-y-2 mb-6">
-              <li className="flex items-center text-sm">
-                <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                ATS Compatibility Score
-              </li>
-              <li className="flex items-center text-sm">
-                <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                Format & Structure Analysis
-              </li>
-              <li className="flex items-center text-sm">
-                <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                Grammar & Content Review
-              </li>
-              <li className="flex items-center text-sm">
-                <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                Improvement Recommendations
-              </li>
-            </ul>
-            <button className="btn-touch w-full bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors group-hover:bg-primary/90">
-              Start ATS Check
-            </button>
           </div>
 
           {/* Job-Specific ATS Check */}
-          <div className="analysis-card p-6 md:p-8 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+          <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-card/50 border border-border/50 hover:border-accent/30 transition-all duration-300 hover:shadow-xl hover:shadow-accent/10 cursor-pointer"
                onClick={() => onAnalysisClick('job')}>
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mr-4">
-                <Briefcase className="w-6 h-6 text-accent-foreground" />
+            <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            
+            <div className="relative p-8">
+              <div className="flex items-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-accent to-accent/80 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                  <Briefcase className="w-8 h-8 text-accent-foreground" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-foreground">Job-Specific Analysis</h3>
+                  <p className="text-sm text-accent-foreground font-medium">Targeted Matching</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold">Job-Specific Analysis</h3>
+              
+              <p className="text-muted-foreground mb-8 leading-relaxed">
+                Upload your resume and paste a job description to get targeted feedback 
+                on how well your resume matches the specific role requirements.
+              </p>
+              
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-accent-foreground mr-3 flex-shrink-0" />
+                  <span>Keyword Match Analysis</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-accent-foreground mr-3 flex-shrink-0" />
+                  <span>Skills Gap Identification</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-accent-foreground mr-3 flex-shrink-0" />
+                  <span>Job-Specific Recommendations</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-accent-foreground mr-3 flex-shrink-0" />
+                  <span>Match Percentage Score</span>
+                </div>
+              </div>
+              
+              <button className="w-full bg-accent text-accent-foreground rounded-xl py-4 px-6 font-semibold hover:bg-accent/90 transition-all duration-300 flex items-center justify-center space-x-2 group-hover:shadow-lg">
+                <span>Analyze with Job Description</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+              </button>
             </div>
-            <p className="text-muted-foreground mb-6">
-              Upload your resume and paste a job description to get targeted feedback 
-              on how well your resume matches the specific role requirements.
-            </p>
-            <ul className="space-y-2 mb-6">
-              <li className="flex items-center text-sm">
-                <div className="w-2 h-2 bg-accent-foreground rounded-full mr-3"></div>
-                Keyword Match Analysis
-              </li>
-              <li className="flex items-center text-sm">
-                <div className="w-2 h-2 bg-accent-foreground rounded-full mr-3"></div>
-                Skills Gap Identification
-              </li>
-              <li className="flex items-center text-sm">
-                <div className="w-2 h-2 bg-accent-foreground rounded-full mr-3"></div>
-                Job-Specific Recommendations
-              </li>
-              <li className="flex items-center text-sm">
-                <div className="w-2 h-2 bg-accent-foreground rounded-full mr-3"></div>
-                Match Percentage Score
-              </li>
-            </ul>
-            <button className="btn-touch w-full bg-accent text-accent-foreground rounded-lg font-medium hover:bg-accent/90 transition-colors group-hover:bg-accent/90">
-              Analyze with Job Description
-            </button>
           </div>
         </div>
       </div>

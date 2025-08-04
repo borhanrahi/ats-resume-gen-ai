@@ -21,6 +21,7 @@ interface ModelManagementProps {
   onRefresh: () => void;
   onUpdateModel: (modelId: string, updates: Partial<ModelConfig>) => void;
   onTestModel: (modelId: string) => void;
+  onSetPrimary: (modelId: string) => void;
   onAddModel: (model: {
     name: string;
     provider: string;
@@ -32,6 +33,10 @@ interface ModelManagementProps {
 
 const getProviderIcon = (provider: string) => {
   switch (provider.toLowerCase()) {
+    case "openrouter":
+      return "🔀";
+    case "google":
+      return "🔍";
     case "moonshot":
       return "🌙";
     case "z-ai":
@@ -47,6 +52,10 @@ const getProviderIcon = (provider: string) => {
 
 const getProviderColor = (provider: string) => {
   switch (provider.toLowerCase()) {
+    case "openrouter":
+      return "from-indigo-500 to-purple-600";
+    case "google":
+      return "from-blue-500 to-indigo-600";
     case "moonshot":
       return "from-blue-500 to-purple-600";
     case "z-ai":
@@ -67,9 +76,13 @@ export default function ModelManagement({
   onRefresh,
   onUpdateModel,
   onTestModel,
+  onSetPrimary,
   onAddModel,
 }: ModelManagementProps) {
   const [showAddModal, setShowAddModal] = useState(false);
+  
+  // Sort models by priority to show primary first
+  const sortedModels = [...models].sort((a, b) => a.priority - b.priority);
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -113,7 +126,7 @@ export default function ModelManagement({
 
       {/* Models Grid */}
       <div className="grid gap-6">
-        {models.map((model, index) => (
+        {sortedModels.map((model, index) => (
           <div
             key={model.id}
             className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition-all"
@@ -132,7 +145,7 @@ export default function ModelManagement({
                   <div>
                     <h3 className="font-bold text-foreground flex items-center space-x-2">
                       <span>{model.name}</span>
-                      {index === 0 && (
+                      {model.priority === 1 && (
                         <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-medium">
                           PRIMARY
                         </span>
@@ -217,15 +230,26 @@ export default function ModelManagement({
                     </div>
                   </label>
 
-                  {/* Test Button */}
-                  <button
-                    onClick={() => onTestModel(model.id)}
-                    className="flex items-center space-x-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-xl hover:bg-secondary/80 transition-all duration-200 font-medium"
-                    disabled={loading}
-                  >
-                    <Zap className="w-4 h-4" />
-                    <span>Test</span>
-                  </button>
+                  {/* Action Buttons */}
+                  <div className="flex items-center space-x-2">
+                    {model.priority !== 1 && (
+                      <button
+                        onClick={() => onSetPrimary(model.id)}
+                        className="flex items-center space-x-1 px-3 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all duration-200 font-medium text-sm"
+                        disabled={loading}
+                      >
+                        <span>Set Primary</span>
+                      </button>
+                    )}
+                    <button
+                      onClick={() => onTestModel(model.id)}
+                      className="flex items-center space-x-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-all duration-200 font-medium"
+                      disabled={loading}
+                    >
+                      <Zap className="w-4 h-4" />
+                      <span>Test</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -234,7 +258,7 @@ export default function ModelManagement({
       </div>
 
       {/* Empty State */}
-      {models.length === 0 && !loading && (
+      {sortedModels.length === 0 && !loading && (
         <div className="text-center py-12">
           <div className="w-20 h-20 bg-muted/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Cpu className="w-10 h-10 text-muted-foreground" />

@@ -1,36 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Moon, Sun, LogIn } from 'lucide-react';
+import { Menu, X, LogIn } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    // Check for saved theme preference or default to light mode
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    
-    if (newDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
 
   return (
     <nav className="bg-background border-b border-border sticky top-0 z-50 backdrop-blur-sm">
@@ -66,17 +42,7 @@ export default function Navigation() {
             </Link>
             
             {/* Dark Mode Toggle */}
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-lg hover:bg-muted transition-colors"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? (
-                <Sun className="w-5 h-5 text-foreground" />
-              ) : (
-                <Moon className="w-5 h-5 text-foreground" />
-              )}
-            </button>
+            <ThemeToggle />
 
             {/* Login Button */}
             <Link
@@ -128,17 +94,8 @@ export default function Navigation() {
               </Link>
               
               <div className="flex items-center justify-between pt-4 border-t border-border">
-                <span className="text-sm text-muted-foreground">Dark Mode</span>
-                <button
-                  onClick={toggleDarkMode}
-                  className="p-2 rounded-lg hover:bg-muted transition-colors"
-                >
-                  {isDarkMode ? (
-                    <Sun className="w-5 h-5 text-foreground" />
-                  ) : (
-                    <Moon className="w-5 h-5 text-foreground" />
-                  )}
-                </button>
+                <span className="text-sm text-muted-foreground">Theme</span>
+                <ThemeToggle />
               </div>
 
               <Link

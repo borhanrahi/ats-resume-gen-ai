@@ -86,14 +86,22 @@ export default function AdminPage() {
   const testModel = async (modelId: string) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/test-model', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ modelId }),
-      });
-
-      const result = await response.json();
-      setMessage(result.success ? 'Model test successful' : `Model test failed: ${result.error}`);
+      // Special handling for Gemini models
+      if (modelId.includes('gemini')) {
+        const response = await fetch('/api/admin/test-gemini', {
+          method: 'POST',
+        });
+        const result = await response.json();
+        setMessage(result.success ? 'Gemini API test successful' : `Gemini test failed: ${result.error}`);
+      } else {
+        const response = await fetch('/api/admin/test-model', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ modelId }),
+        });
+        const result = await response.json();
+        setMessage(result.success ? 'Model test successful' : `Model test failed: ${result.error}`);
+      }
     } catch {
       setMessage('Model test failed');
     } finally {
@@ -126,6 +134,25 @@ export default function AdminPage() {
     }
   };
 
+  const setPrimaryModel = async (modelId: string) => {
+    try {
+      const response = await fetch('/api/admin/models/set-primary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ modelId }),
+      });
+
+      if (response.ok) {
+        setMessage('Primary model updated successfully');
+        loadModels();
+      } else {
+        setMessage('Failed to set primary model');
+      }
+    } catch {
+      setMessage('Error setting primary model');
+    }
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
@@ -139,6 +166,7 @@ export default function AdminPage() {
             onRefresh={loadModels}
             onUpdateModel={updateModel}
             onTestModel={testModel}
+            onSetPrimary={setPrimaryModel}
             onAddModel={addModel}
           />
         );
@@ -180,24 +208,25 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="admin-layout">
-      <div className="min-h-screen bg-background flex">
-        {/* Sidebar */}
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Sidebar */}
+      <div className="w-full lg:w-64 flex-shrink-0">
         <AdminSidebar 
           activeSection={activeSection}
           onSectionChange={setActiveSection}
         />
-        
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col">
-          {/* Top Bar */}
-          <div className="bg-card border-b border-border p-4">
-            <div className="admin-content flex items-center justify-between">
+      </div>
+      
+      {/* Main Content */}
+      <div className="flex-1 min-h-[calc(100vh-8rem)]">
+        {/* Top Bar */}
+        <div className="bg-card border border-border rounded-lg p-4 lg:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-xl font-bold text-foreground capitalize">
+              <h1 className="text-xl lg:text-2xl font-bold text-foreground capitalize">
                 {activeSection === 'models' ? 'AI Models' : activeSection}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mt-1">
                 {activeSection === 'dashboard' && 'System overview and statistics'}
                 {activeSection === 'models' && 'Configure AI models and fallback chains'}
                 {activeSection === 'users' && 'Manage user accounts and permissions'}
@@ -208,7 +237,7 @@ export default function AdminPage() {
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center space-x-2 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-all"
+              className="flex items-center space-x-2 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all self-start sm:self-auto"
             >
               <LogOut className="w-4 h-4" />
               <span>Logout</span>
@@ -216,12 +245,9 @@ export default function AdminPage() {
           </div>
         </div>
         
-          {/* Content Area */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="admin-content py-6">
-              {renderContent()}
-            </div>
-          </div>
+        {/* Content Area */}
+        <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
+          {renderContent()}
         </div>
       </div>
     </div>
