@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbopack --port 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -11,6 +11,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
     "@types/pdfjs-dist": "^2.10.377",
+    "@types/uuid": "^10.0.0",
     "appwrite": "^18.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -24,8 +25,10 @@
     "pdfjs-dist": "^5.4.54",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.62.0",
     "tailwind-merge": "^3.3.1",
+    "uuid": "^11.1.0",
     "zod": "^4.0.14",
     "zustand": "^5.0.7"
   },
