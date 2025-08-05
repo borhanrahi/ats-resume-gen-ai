@@ -17,16 +17,16 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <HeroSection />
-      <AnalysisOptions onAnalysisClick={handleAnalysisClick} />
+      {/* <AnalysisOptions onAnalysisClick={handleAnalysisClick} /> */}
       
       {/* Upload Modal */}
-      {showUploadModal && (
+      {/* {showUploadModal && (
         <UploadModal
           isOpen={showUploadModal}
           onClose={() => setShowUploadModal(false)}
           analysisType={analysisType}
         />
-      )}
+      )} */}
     </div>
   );
 }
