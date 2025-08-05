@@ -5,7 +5,6 @@ import {
   AlertCircle,
   CheckCircle,
   Info,
-  Zap,
   Eye,
   EyeOff,
   Wand2,
