@@ -1,50 +1,62 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import RecommendationsList from "@/components/results/RecommendationsList";
-import LoadingState from "@/components/results/LoadingState";
-import ErrorState from "@/components/results/ErrorState";
-import ResultsHeader from "@/components/results/ResultsHeader";
-import ScoreOverview from "@/components/results/ScoreOverview";
-import DetailedBreakdown from "@/components/results/DetailedBreakdown";
-import GrammarIssues from "@/components/results/GrammarIssues";
-
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import AnalysisResults from '@/components/results/AnalysisResults';
+import ErrorState from '@/components/results/ErrorState';
+import NonResumeError from '@/components/results/NonResumeError';
+import LoadingState from '@/components/results/LoadingState';
 
 interface AnalysisResult {
   fileName: string;
   analysisType: string;
   analysis: {
-    atsScore: number;
-    matchPercentage?: number;
-    breakdown: {
-      formatting: number;
-      keywords: number;
-      structure: number;
-      length: number;
+    isValidResume: boolean;
+    resumeDetection?: {
+      isResume: boolean;
+      confidence: number;
+      reasons: string[];
+      suggestions?: string[];
     };
-    keywordMatch?: {
-      found: string[];
-      missing: string[];
+    atsScore: {
+      totalScore: number;
+      maxScore: number;
+      percentage: number;
+      dimensions: {
+        textExtraction: { name: string; score: number; maxScore: number; percentage: number; details: any[] };
+        structure: { name: string; score: number; maxScore: number; percentage: number; details: any[] };
+        formatting: { name: string; score: number; maxScore: number; percentage: number; details: any[] };
+        keywords: { name: string; score: number; maxScore: number; percentage: number; details: any[] };
+        content: { name: string; score: number; maxScore: number; percentage: number; details: any[] };
+        language: { name: string; score: number; maxScore: number; percentage: number; details: any[] };
+      };
+      penalties: Array<{
+        type: string;
+        description: string;
+        points: number;
+      }>;
+      recommendations: string[];
+    };
+    aiSuggestions: Array<{
+      category: string;
+      priority: 'high' | 'medium' | 'low';
+      title: string;
+      description: string;
+      example?: string;
+      impact: string;
+    }>;
+    keywordMatching?: {
+      foundKeywords: string[];
+      missingKeywords: string[];
       matchPercentage: number;
       suggestions: string[];
     };
-    recommendations: Array<{
-      id: string;
-      category: string;
-      priority: string;
-      title: string;
-      description: string;
-      suggestion: string;
-      impact: string;
-    }>;
-    grammarIssues: Array<{
-      id: string;
-      type: string;
-      text: string;
-      suggestion: string;
-      severity: string;
-    }>;
+    improvementPlan?: {
+      quickWins: Array<{ title: string; description: string; timeEstimate: string }>;
+      mediumTerm: Array<{ title: string; description: string; timeEstimate: string }>;
+      longTerm: Array<{ title: string; description: string; timeEstimate: string }>;
+    };
+    error?: string;
   };
   createdAt: string;
 }
@@ -62,8 +74,10 @@ export default function ResultsPage() {
     if (latestResult) {
       try {
         const parsedResult = JSON.parse(latestResult);
+        console.log('Loaded analysis result:', parsedResult);
         setResult(parsedResult);
-      } catch {
+      } catch (err) {
+        console.error('Failed to parse analysis result:', err);
         setError("Failed to load results");
       }
     } else {
@@ -74,40 +88,54 @@ export default function ResultsPage() {
   }, []);
 
   if (loading) {
-    return <LoadingState />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p>Loading analysis results...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error || !result) {
     return <ErrorState error={error} onBackHome={() => router.push("/")} />;
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      <ResultsHeader
+  // If the document is not a valid resume, show the NonResumeError component
+  if (!result.analysis.isValidResume && result.analysis.resumeDetection) {
+    return (
+      <NonResumeError
+        resumeDetection={result.analysis.resumeDetection}
         fileName={result.fileName}
-        createdAt={result.createdAt}
-        onBackHome={() => router.push("/")}
       />
+    );
+  }
 
-      <div className="container-mobile py-8">
-        <ScoreOverview
-          analysis={result.analysis}
-          analysisType={result.analysisType}
-        />
+  // If there's an error but no resume detection data, show generic error
+  if (!result.analysis.isValidResume || result.analysis.error) {
+    return (
+      <ErrorState
+        error={result.analysis.error || "Analysis failed. Please try again."}
+        onBackHome={() => router.push('/')}
+      />
+    );
+  }
 
-        <DetailedBreakdown
-          breakdown={result.analysis.breakdown}
-          keywordMatch={result.analysis.keywordMatch}
-        />
+  // If no ATS score data, something went wrong
+  if (!result.analysis.atsScore) {
+    return (
+      <ErrorState
+        error="ATS analysis data is missing. Please try uploading your resume again."
+        onBackHome={() => router.push('/')}
+      />
+    );
+  }
 
-        <RecommendationsList
-          recommendations={result.analysis.recommendations}
-        />
-
-        {result.analysis.grammarIssues.length > 0 && (
-          <GrammarIssues issues={result.analysis.grammarIssues} />
-        )}
-      </div>
-    </div>
+  return (
+    <AnalysisResults 
+      analysis={result.analysis}
+      fileName={result.fileName}
+    />
   );
 }

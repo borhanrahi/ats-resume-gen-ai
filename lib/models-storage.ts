@@ -180,6 +180,18 @@ export function getPrimaryModel(models: ModelConfig[], tier: 'free' | 'premium')
   return tierModels.find(m => m.priority === 1) || tierModels[0] || null;
 }
 
+// Get active models sorted by priority
+export function getActiveModels(tier?: 'free' | 'premium'): ModelConfig[] {
+  const models = loadModels();
+  let activeModels = models.filter(m => m.isActive);
+  
+  if (tier) {
+    activeModels = activeModels.filter(m => m.tier === tier);
+  }
+  
+  return activeModels.sort((a, b) => a.priority - b.priority);
+}
+
 // Function to normalize priorities within each tier
 export function normalizePriorities(models: ModelConfig[]): void {
   // Separate models by tier
