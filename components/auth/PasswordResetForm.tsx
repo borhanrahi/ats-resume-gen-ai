@@ -111,7 +111,7 @@ export const PasswordResetForm: React.FC<PasswordResetFormProps> = ({
               Check Your Email
             </h2>
             <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-6">
-              We've sent a password reset link to your email address. Please check your inbox and follow the instructions to reset your password.
+              We&apos;ve sent a password reset link to your email address. Please check your inbox and follow the instructions to reset your password.
             </p>
             {onBack && (
               <button
@@ -135,7 +135,7 @@ export const PasswordResetForm: React.FC<PasswordResetFormProps> = ({
             Reset Password
           </h2>
           <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
-            Enter your email address and we'll send you a link to reset your password.
+            Enter your email address and we&apos;ll send you a link to reset your password.
           </p>
         </div>
 

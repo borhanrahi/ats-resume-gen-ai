@@ -173,13 +173,13 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
               Verification Email Sent
             </h2>
             <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-6">
-              We've sent a verification link to your email address. Please check your inbox and click the link to verify your account.
+              We&apos;ve sent a verification link to your email address. Please check your inbox and click the link to verify your account.
             </p>
             
             {/* Resend option */}
             <div className="space-y-3">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Didn't receive the email?
+                Didn&apos;t receive the email?
               </p>
               <button
                 onClick={handleSendVerification}
@@ -231,7 +231,7 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
         {user?.email && (
           <div className="mb-6 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-              We'll send a verification link to:
+              We&apos;ll send a verification link to:
             </p>
             <p className="text-base font-medium text-gray-900 dark:text-white text-center mt-1">
               {user.email}

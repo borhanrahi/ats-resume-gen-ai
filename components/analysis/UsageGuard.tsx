@@ -43,7 +43,7 @@ export function UsageGuard({
           </h2>
           
           <p className="text-muted-foreground mb-4">
-            You've used all {usage.dailyCount} of your free daily analyses. 
+            You&apos;ve used all {usage.dailyCount} of your free daily analyses. 
             Your limit will reset tomorrow.
           </p>
           
