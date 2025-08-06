@@ -100,9 +100,9 @@ export class OpenRouterClient {
   }
 
   /**
-   * Make HTTP request to OpenRouter API with retry logic
+   * Make HTTP request to OpenRouter API with retry logic (public method)
    */
-  private async makeRequest(request: OpenRouterRequest): Promise<OpenRouterResponse> {
+  async makeRequest(request: OpenRouterRequest): Promise<OpenRouterResponse> {
     let lastError: Error | null = null;
 
     for (let attempt = 1; attempt <= this.config.maxRetries; attempt++) {
