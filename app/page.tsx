@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import HeroSection from '@/components/home/HeroSection';
 import AnalysisOptions from '@/components/home/AnalysisOptions';
+import UploadModal from '@/components/upload/UploadModal';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import CTASection from '@/components/home/CTASection';
-import UploadModal from '@/components/upload/UploadModal';
 
 export default function Home() {
   const router = useRouter();

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navigation from "@/components/layout/Navigation";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
+import { AuthProvider } from "@/lib/auth/AuthContext";
 import StructuredData from "@/components/layout/StructuredData";
 import "./globals.css";
 
@@ -187,8 +188,10 @@ export default function RootLayout({
           defaultTheme="system"
           storageKey="ats-theme"
         >
-          <Navigation />
-          {children}
+          <AuthProvider>
+            <Navigation />
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
