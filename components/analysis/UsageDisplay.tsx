@@ -28,7 +28,13 @@ export function UsageDisplay({
   onUpgradeClick 
 }: UsageDisplayProps) {
   const [usage, setUsage] = useState<UserUsage | null>(null);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<{
+    totalAnalyses: number;
+    todayAnalyses: number;
+    remainingToday: number;
+    averageScore: number;
+    lastAnalysisDate: Date | null;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

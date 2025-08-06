@@ -890,27 +890,6 @@ export class ATSScoringEngine {
     
     return [...new Set(keywords)]; // Remove duplicates
   }
-}['s]*\s+(?:of\s+)?(?:science|arts|engineering|business)/gi,
-      /master['s]*\s+(?:of\s+)?(?:science|arts|engineering|business|administration)/gi,
-      /phd|doctorate|doctoral/gi,
-      /computer science|information technology|software engineering/gi,
-      /business administration|management|marketing|finance/gi
-    ];
-    
-    for (const pattern of educationPatterns) {
-      const matches = jobDescription.match(pattern);
-      if (matches) {
-        matches.forEach(match => {
-          if (!keywords.includes(match)) {
-            keywords.push(match);
-          }
-        });
-      }
-    }
-    
-    // Remove duplicates and return
-    return [...new Set(keywords)];
-  }
 
   private analyzeKeywords(text: string, keywords: string[]): KeywordAnalysis {
     const lowerText = text.toLowerCase();

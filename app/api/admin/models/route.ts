@@ -1,19 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loadModels, saveModels, ModelConfig } from '../../../../lib/models-storage';
 
-// Load models from persistent storage
-export let modelConfigs: ModelConfig[] = loadModels();
-
 export async function GET() {
   // Always reload fresh models from persistent storage
-  modelConfigs = loadModels();
+  const modelConfigs = loadModels();
   return NextResponse.json({ models: modelConfigs });
 }
 
 export async function PUT(request: NextRequest) {
   try {
     // Always reload fresh models from persistent storage
-    modelConfigs = loadModels();
+    const modelConfigs = loadModels();
     
     const { modelId, updates } = await request.json();
 
@@ -39,7 +36,7 @@ export async function PUT(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Always reload fresh models from persistent storage
-    modelConfigs = loadModels();
+    const modelConfigs = loadModels();
     
     const { name, provider, model, tier, isActive, apiKey } = await request.json();
 

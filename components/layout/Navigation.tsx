@@ -29,16 +29,16 @@ export default function Navigation() {
               Home
             </Link>
             <Link 
+              href="/analyze" 
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Analyze
+            </Link>
+            <Link 
               href="/results" 
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               Results
-            </Link>
-            <Link 
-              href="/admin" 
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Admin
             </Link>
             
             {/* Dark Mode Toggle */}
@@ -73,24 +73,24 @@ export default function Navigation() {
             <div className="flex flex-col space-y-4">
               <Link 
                 href="/" 
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="btn-touch text-muted-foreground hover:text-foreground transition-colors py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </Link>
               <Link 
+                href="/analyze" 
+                className="btn-touch text-muted-foreground hover:text-foreground transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Analyze Resume
+              </Link>
+              <Link 
                 href="/results" 
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="btn-touch text-muted-foreground hover:text-foreground transition-colors py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Results
-              </Link>
-              <Link 
-                href="/admin" 
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Admin
               </Link>
               
               <div className="flex items-center justify-between pt-4 border-t border-border">
@@ -100,7 +100,7 @@ export default function Navigation() {
 
               <Link
                 href="/auth/login"
-                className="flex items-center justify-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                className="btn-touch flex items-center justify-center space-x-2 px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <LogIn className="w-4 h-4" />

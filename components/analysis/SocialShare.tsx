@@ -153,7 +153,7 @@ export function SocialShare({
           </button>
 
           {/* Native Share (mobile) or Copy Link (desktop) */}
-          {navigator.share() ? (
+          {navigator.share ? (
             <button
               onClick={() => handleShare("native")}
               disabled={isSharing}

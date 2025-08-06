@@ -295,7 +295,7 @@ body {
   text-wrap: pretty;
 }
 
-/* Mobile-specific utilities */
+/* Enhanced Mobile-specific utilities */
 .mobile-only {
   display: block;
 }
@@ -316,11 +316,69 @@ body {
   }
 }
 
-/* Touch-friendly button sizes */
+.tablet-up {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .tablet-up {
+    display: block;
+  }
+}
+
+/* Enhanced Touch-friendly button sizes with better accessibility */
 .btn-touch {
   min-height: 44px; /* iOS recommended touch target */
   min-width: 44px;
   padding: var(--spacing-2_5) var(--spacing-4);
+  touch-action: manipulation; /* Optimize for touch */
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+  user-select: none; /* Prevent text selection on touch */
+}
+
+/* Large touch targets for primary actions */
+.btn-touch-large {
+  min-height: 56px; /* Larger touch target for primary actions */
+  min-width: 56px;
+  padding: var(--spacing-3_5) var(--spacing-6);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Mobile-optimized focus states */
+.btn-touch:focus-visible,
+.btn-touch-large:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Active states for better touch feedback */
+.btn-touch:active,
+.btn-touch-large:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Prevent zoom on input focus (iOS) */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea,
+select {
+  font-size: 16px; /* Prevents zoom on iOS */
+}
+
+@media (min-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 14px; /* Smaller on desktop */
+  }
 }
 
 /* Mobile-optimized text sizes */
@@ -575,6 +633,68 @@ body {
   outline-offset: 2px;
 }
 
+/* Mobile Performance Optimizations */
+@media (max-width: 640px) {
+  /* Reduce animations on mobile for better performance */
+  .reduce-motion {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* Optimize scrolling performance */
+  .scroll-smooth {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Optimize rendering for mobile */
+  .mobile-optimized {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
+  }
+}
+
+/* Responsive Images */
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Mobile-first grid system */
+.mobile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .mobile-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* Safe area insets for devices with notches */
+.safe-area-inset {
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+}
+
 /* Print Styles */
 @media print {
   .no-print {
@@ -587,5 +707,17 @@ body {
 
   .print-break-after {
     page-break-after: always;
+  }
+  
+  /* Optimize for print */
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+  
+  .btn-touch,
+  .btn-touch-large {
+    min-height: auto;
+    padding: 0.25rem 0.5rem;
   }
 }

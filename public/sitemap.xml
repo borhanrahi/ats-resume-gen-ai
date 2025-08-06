@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage - Mobile-first optimized -->
+  <url>
+    <loc>https://ats-resume-checker.vercel.app/</loc>
+    <lastmod>2024-01-01T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <mobile:mobile/>
+    <image:image>
+      <image:loc>https://ats-resume-checker.vercel.app/og-image.jpg</image:loc>
+      <image:title>ATS Resume Checker - AI-Powered Resume Analysis</image:title>
+      <image:caption>Free mobile-optimized resume analysis tool</image:caption>
+    </image:image>
+  </url>
+  
+  <!-- Analyze page - Core functionality -->
+  <url>
+    <loc>https://ats-resume-checker.vercel.app/analyze</loc>
+    <lastmod>2024-01-01T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <mobile:mobile/>
+  </url>
+  
+  <!-- Results page -->
+  <url>
+    <loc>https://ats-resume-checker.vercel.app/results</loc>
+    <lastmod>2024-01-01T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <mobile:mobile/>
+  </url>
+  
+  <!-- Job-specific analysis -->
+  <url>
+    <loc>https://ats-resume-checker.vercel.app/analyze?type=job</loc>
+    <lastmod>2024-01-01T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <mobile:mobile/>
+  </url>
+  
+</urlset>

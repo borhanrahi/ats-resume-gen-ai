@@ -1,10 +1,19 @@
-import * as pdfjsLib from 'pdfjs-dist';
-import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+// Dynamic import for client-side only
+let pdfjsLib: typeof import('pdfjs-dist') | null = null;
+let PDFDocumentProxy: any = null;
+let PDFPageProxy: any = null;
 
-// Configure PDF.js worker
-if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-}
+// Initialize PDF.js only on client side
+const initPDFJS = async () => {
+  if (typeof window !== 'undefined' && !pdfjsLib) {
+    pdfjsLib = await import('pdfjs-dist');
+    const types = await import('pdfjs-dist');
+    PDFDocumentProxy = types.PDFDocumentProxy;
+    PDFPageProxy = types.PDFPageProxy;
+    
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  }
+};
 
 export interface PDFParseResult {
   content: string;
@@ -59,6 +68,16 @@ export class PDFParser {
     fileName?: string
   ): Promise<PDFParseResult> {
     try {
+      // Initialize PDF.js on client side only
+      await initPDFJS();
+      
+      if (!pdfjsLib) {
+        throw new PDFParseException({
+          code: 'PARSE_ERROR',
+          message: 'PDF.js not available - this function must be called on the client side'
+        });
+      }
+
       // Validate input
       if (!file) {
         throw new PDFParseException({
@@ -99,15 +118,15 @@ export class PDFParser {
         verbosity: 0 // Suppress console warnings
       });
 
-      let pdfDocument: PDFDocumentProxy;
+      let pdfDocument: any;
       
       try {
         pdfDocument = await loadingTask.promise;
-      } catch (error: any) {
+      } catch (error: unknown) {
         throw new PDFParseException({
           code: 'INVALID_PDF',
           message: 'Invalid or corrupted PDF file',
-          details: error.message
+          details: error instanceof Error ? error.message : String(error)
         });
       }
 
@@ -128,13 +147,13 @@ export class PDFParser {
 
       for (let pageNum = 1; pageNum <= pageCount; pageNum++) {
         try {
-          const page: PDFPageProxy = await pdfDocument.getPage(pageNum);
+          const page: any = await pdfDocument.getPage(pageNum);
           const textContent = await page.getTextContent();
           
           // Combine text items with proper spacing
           const pageText = textContent.items
-            .map((item: any) => {
-              if ('str' in item) {
+            .map((item: Record<string, unknown>) => {
+              if ('str' in item && typeof item.str === 'string') {
                 return item.str;
               }
               return '';
@@ -152,7 +171,7 @@ export class PDFParser {
           });
 
           fullContent += pageText + '\n';
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.warn(`Failed to extract text from page ${pageNum}:`, error);
           // Continue with other pages even if one fails
           pages.push({
@@ -175,7 +194,7 @@ export class PDFParser {
       }
 
       // Build result with proper type handling for metadata
-      const info = metadata.info as unknown; // PDF.js metadata info can have various properties
+      const info = metadata.info as Record<string, unknown>; // PDF.js metadata info can have various properties
       const result: PDFParseResult = {
         content: fullContent,
         metadata: {
@@ -184,13 +203,13 @@ export class PDFParser {
           uploadDate: new Date(),
           wordCount: totalWordCount,
           pageCount,
-          title: info?.Title || undefined,
-          author: info?.Author || undefined,
-          subject: info?.Subject || undefined,
-          creator: info?.Creator || undefined,
-          producer: info?.Producer || undefined,
-          creationDate: info?.CreationDate ? new Date(info.CreationDate) : undefined,
-          modificationDate: info?.ModDate ? new Date(info.ModDate) : undefined,
+          title: typeof info?.Title === 'string' ? info.Title : undefined,
+          author: typeof info?.Author === 'string' ? info.Author : undefined,
+          subject: typeof info?.Subject === 'string' ? info.Subject : undefined,
+          creator: typeof info?.Creator === 'string' ? info.Creator : undefined,
+          producer: typeof info?.Producer === 'string' ? info.Producer : undefined,
+          creationDate: info?.CreationDate ? new Date(info.CreationDate as string) : undefined,
+          modificationDate: info?.ModDate ? new Date(info.ModDate as string) : undefined,
         },
         pages
       };

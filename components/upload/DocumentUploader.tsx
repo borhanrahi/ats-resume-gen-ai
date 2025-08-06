@@ -108,6 +108,17 @@ export default function DocumentUploader({
 
   // Process uploaded file
   const processFile = useCallback(async (file: File) => {
+    // Ensure we're on the client side
+    if (typeof window === 'undefined') {
+      setState(prev => ({
+        ...prev,
+        error: 'File processing is only available on the client side',
+        isProcessing: false,
+        progress: 0
+      }));
+      return;
+    }
+
     setState(prev => ({ 
       ...prev, 
       isProcessing: true, 
