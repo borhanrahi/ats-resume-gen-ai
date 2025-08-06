@@ -47,8 +47,7 @@ interface AnalysisHistoryProps {
 }
 
 type SortField = 'createdAt' | 'score' | 'resumeName' | 'jobTitle';
-expor
-t default function AnalysisHistory({ className }: AnalysisHistoryProps) {
+export default function AnalysisHistory({ className }: AnalysisHistoryProps) {
   const { user } = useAuth();
   const [analyses, setAnalyses] = useState<AnalysisHistoryItem[]>([]);
   const [filteredAnalyses, setFilteredAnalyses] = useState<AnalysisHistoryItem[]>([]);
@@ -579,9 +578,9 @@ t default function AnalysisHistory({ className }: AnalysisHistoryProps) {
                           <div key={category} className="space-y-1">
                             <div className="flex justify-between text-sm">
                               <span className="capitalize">{category}</span>
-                              <span className={getScoreColor(score)}>{score}%</span>
+                              <span className={getScoreColor(score as number)}>{score}%</span>
                             </div>
-                            <Progress value={score} className="h-2" />
+                            <Progress value={score as number} className="h-2" />
                           </div>
                         ))}
                       </div>

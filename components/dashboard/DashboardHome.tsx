@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { 
-  TrendingUp, 
-  FileText, 
-  Target, 
-  Clock, 
-  Award, 
+import { useState, useEffect } from "react";
+import {
+  TrendingUp,
+  FileText,
+  Target,
+  Clock,
+  Award,
   BarChart3,
   ArrowRight,
   Calendar,
   Download,
   Eye,
-  Plus
-} from 'lucide-react';
-import Link from 'next/link';
-import { User } from '@/types/user';
-import { ATSAnalysis } from '@/types/analysis';
+  Plus,
+} from "lucide-react";
+import Link from "next/link";
+import { User } from "@/types/user";
+import { ATSAnalysis } from "@/types/analysis";
 
 interface DashboardHomeProps {
   user: User;
@@ -45,70 +45,70 @@ export default function DashboardHome({
   recentAnalyses,
   totalAnalyses,
   averageScore,
-  improvementTrend
+  improvementTrend,
 }: DashboardHomeProps) {
-  const [greeting, setGreeting] = useState('');
+  const [greeting, setGreeting] = useState("");
 
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) {
-      setGreeting('Good morning');
+      setGreeting("Good morning");
     } else if (hour < 18) {
-      setGreeting('Good afternoon');
+      setGreeting("Good afternoon");
     } else {
-      setGreeting('Good evening');
+      setGreeting("Good evening");
     }
   }, []);
 
   const quickActions: QuickAction[] = [
     {
-      title: 'New Analysis',
-      description: 'Analyze a new resume',
-      href: '/analyze',
+      title: "New Analysis",
+      description: "Analyze a new resume",
+      href: "/analyze",
       icon: Plus,
-      color: 'bg-primary text-primary-foreground'
+      color: "bg-primary text-primary-foreground",
     },
     {
-      title: 'Resume Editor',
-      description: 'Build or edit resume',
-      href: '/editor',
+      title: "Resume Editor",
+      description: "Build or edit resume",
+      href: "/editor",
       icon: FileText,
-      color: 'bg-secondary text-secondary-foreground'
+      color: "bg-secondary text-secondary-foreground",
     },
     {
-      title: 'View History',
-      description: 'See all analyses',
-      href: '/dashboard/history',
+      title: "View History",
+      description: "See all analyses",
+      href: "/dashboard/history",
       icon: Clock,
-      color: 'bg-accent text-accent-foreground'
+      color: "bg-accent text-accent-foreground",
     },
     {
-      title: 'Templates',
-      description: 'Browse templates',
-      href: '/templates',
+      title: "Templates",
+      description: "Browse templates",
+      href: "/templates",
       icon: Award,
-      color: 'bg-chart-1 text-white'
-    }
+      color: "bg-chart-1 text-white",
+    },
   ];
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 80) return "text-green-600";
+    if (score >= 60) return "text-yellow-600";
+    return "text-red-600";
   };
 
   const getScoreBgColor = (score: number) => {
-    if (score >= 80) return 'bg-green-100 dark:bg-green-900/20';
-    if (score >= 60) return 'bg-yellow-100 dark:bg-yellow-900/20';
-    return 'bg-red-100 dark:bg-red-900/20';
+    if (score >= 80) return "bg-green-100 dark:bg-green-900/20";
+    if (score >= 60) return "bg-yellow-100 dark:bg-yellow-900/20";
+    return "bg-red-100 dark:bg-red-900/20";
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(date);
   };
 
@@ -153,7 +153,11 @@ export default function DashboardHome({
             <span className="text-xs text-muted-foreground">Average</span>
           </div>
           <div className="space-y-1">
-            <p className={`text-2xl md:text-3xl font-bold ${getScoreColor(averageScore)}`}>
+            <p
+              className={`text-2xl md:text-3xl font-bold ${getScoreColor(
+                averageScore
+              )}`}
+            >
               {averageScore.toFixed(0)}%
             </p>
             <p className="text-xs md:text-sm text-muted-foreground">
@@ -171,10 +175,13 @@ export default function DashboardHome({
             <span className="text-xs text-muted-foreground">Trend</span>
           </div>
           <div className="space-y-1">
-            <p className={`text-2xl md:text-3xl font-bold ${
-              improvementTrend >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
-              {improvementTrend >= 0 ? '+' : ''}{improvementTrend.toFixed(1)}%
+            <p
+              className={`text-2xl md:text-3xl font-bold ${
+                improvementTrend >= 0 ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {improvementTrend >= 0 ? "+" : ""}
+              {improvementTrend.toFixed(1)}%
             </p>
             <p className="text-xs md:text-sm text-muted-foreground">
               This month
@@ -195,7 +202,7 @@ export default function DashboardHome({
               {user.subscription.plan}
             </p>
             <p className="text-xs md:text-sm text-muted-foreground">
-              {user.subscription.status === 'active' ? 'Active' : 'Inactive'}
+              {user.subscription.status === "active" ? "Active" : "Inactive"}
             </p>
           </div>
         </div>
@@ -259,8 +266,16 @@ export default function DashboardHome({
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getScoreBgColor(analysis.score)}`}>
-                        <span className={`text-sm font-bold ${getScoreColor(analysis.score)}`}>
+                      <div
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${getScoreBgColor(
+                          analysis.score
+                        )}`}
+                      >
+                        <span
+                          className={`text-sm font-bold ${getScoreColor(
+                            analysis.score
+                          )}`}
+                        >
                           {analysis.score}
                         </span>
                       </div>
@@ -282,7 +297,7 @@ export default function DashboardHome({
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                       <span>ATS Score: {analysis.score}%</span>
@@ -324,28 +339,38 @@ export default function DashboardHome({
           <h2 className="text-lg md:text-xl font-semibold text-foreground mb-4">
             Progress Tracking
           </h2>
-          
+
           <div className="space-y-4">
             {/* Score Progress */}
             <div className="bg-card border border-border rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-medium text-foreground">Score Progress</h3>
-                <span className={`text-sm font-medium ${getScoreColor(averageScore)}`}>
+                <span
+                  className={`text-sm font-medium ${getScoreColor(
+                    averageScore
+                  )}`}
+                >
                   {averageScore.toFixed(0)}%
                 </span>
               </div>
               <div className="w-full bg-muted rounded-full h-2 mb-2">
                 <div
                   className={`h-2 rounded-full transition-all duration-500 ${
-                    averageScore >= 80 ? 'bg-green-500' :
-                    averageScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                    averageScore >= 80
+                      ? "bg-green-500"
+                      : averageScore >= 60
+                      ? "bg-yellow-500"
+                      : "bg-red-500"
                   }`}
                   style={{ width: `${Math.min(averageScore, 100)}%` }}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                {averageScore >= 80 ? 'Excellent' :
-                 averageScore >= 60 ? 'Good' : 'Needs improvement'}
+                {averageScore >= 80
+                  ? "Excellent"
+                  : averageScore >= 60
+                  ? "Good"
+                  : "Needs improvement"}
               </p>
             </div>
 
@@ -358,16 +383,22 @@ export default function DashboardHome({
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Analyses</span>
-                  <span className="font-medium">{Math.min(totalAnalyses, 10)}/10</span>
+                  <span className="font-medium">
+                    {Math.min(totalAnalyses, 10)}/10
+                  </span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-primary h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((totalAnalyses / 10) * 100, 100)}%` }}
+                    style={{
+                      width: `${Math.min((totalAnalyses / 10) * 100, 100)}%`,
+                    }}
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {totalAnalyses >= 10 ? 'Goal achieved!' : `${10 - totalAnalyses} more to go`}
+                  {totalAnalyses >= 10
+                    ? "Goal achieved!"
+                    : `${10 - totalAnalyses} more to go`}
                 </p>
               </div>
             </div>
