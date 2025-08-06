@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { authService, AppwriteUser, UserSession } from './appwrite';
 import { 
   AuthContextType, 
@@ -32,18 +32,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isPremium: false
   });
 
-  // Initialize auth state on mount
-  useEffect(() => {
-    initializeAuth();
-  }, []);
-
   // Initialize authentication state
-  const initializeAuth = async () => {
+  const initializeAuth = useCallback(async () => {
     try {
-      // First, try to restore from localStorage
-      const { user: storedUser, session: storedSession } = restoreAuthState();
+      // First, check for a session in local storage
+      const storedSession = restoreAuthState().session;
       
-      if (storedUser && storedSession) {
+      if (storedSession) {
         // Validate the stored session
         const { isValid, user, session } = await validateSession();
         
@@ -56,44 +51,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             isPremium: checkPremiumAccess(user)
           });
           persistAuthState(user, session);
-          return;
+        } else {
+          // If no session is validated, ensure the state is cleared.
+          setState({
+            user: null,
+            session: null,
+            isLoading: false,
+            isAuthenticated: false,
+            isPremium: false,
+          });
+          clearAuthState();
         }
-      }
-      
-      // If no valid stored session, check with Appwrite
-      const { isValid, user, session } = await validateSession();
-      
-      if (isValid && user && session) {
-        setState({
-          user,
-          session,
-          isLoading: false,
-          isAuthenticated: true,
-          isPremium: checkPremiumAccess(user)
-        });
-        persistAuthState(user, session);
       } else {
+        // If no session exists in local storage, consider the user logged out
         setState({
           user: null,
           session: null,
           isLoading: false,
           isAuthenticated: false,
-          isPremium: false
+          isPremium: false,
         });
         clearAuthState();
       }
     } catch (error) {
       console.error('Auth initialization failed:', error);
+      // Ensure state is cleared on initialization failure.
       setState({
         user: null,
         session: null,
         isLoading: false,
         isAuthenticated: false,
-        isPremium: false
+        isPremium: false,
       });
       clearAuthState();
     }
-  };
+  }, []);
+
+  // Initialize auth state on mount
+  useEffect(() => {
+    console.log('[AuthContext] Initializing authentication...');
+    const timer = setTimeout(() => {
+      console.warn('[AuthContext] Auth check timed out. Forcing loading state to false.');
+      setState(prev => ({ ...prev, isLoading: false }));
+    }, 5000); // 5-second timeout as a failsafe
+
+    initializeAuth().finally(() => {
+      console.log('[AuthContext] Initialization complete.');
+      clearTimeout(timer);
+    });
+
+    return () => clearTimeout(timer);
+  }, [initializeAuth]);
 
   // Login function
   const login = async (email: string, password: string): Promise<void> => {

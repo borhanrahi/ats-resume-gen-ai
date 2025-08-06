@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Navigation from "@/components/layout/Navigation";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { AuthProvider } from "@/lib/auth/AuthContext";
+import AuthStatusIndicator from '@/components/layout/AuthStatusIndicator';
 import StructuredData from "@/components/layout/StructuredData";
 import "./globals.css";
 
@@ -189,6 +190,7 @@ export default function RootLayout({
           storageKey="ats-theme"
         >
           <AuthProvider>
+            <AuthStatusIndicator />
             <Navigation />
             {children}
           </AuthProvider>

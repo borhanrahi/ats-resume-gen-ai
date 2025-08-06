@@ -1,3 +1,4 @@
+import { AppwriteException } from 'appwrite';
 import { authService, AppwriteUser, UserSession, TokenManager } from './appwrite';
 
 // Authentication state management
@@ -36,7 +37,12 @@ export const validateSession = async (): Promise<{
     // Check if session is expired
     const isExpired = new Date(session.expire) < new Date();
     if (isExpired) {
-      await authService.logout();
+      // Silently log out if the session is expired
+      try {
+        await authService.logout();
+      } catch (logoutError) {
+        // Ignore errors during silent logout
+      }
       return { isValid: false, user: null, session: null };
     }
 
@@ -46,8 +52,15 @@ export const validateSession = async (): Promise<{
     }
 
     return { isValid: true, user, session };
-  } catch (error) {
-    console.error('Session validation failed:', error);
+  } catch (error: any) {
+    // If the error is 401, it means the user is not logged in. This is an expected state.
+    // If the error is an AppwriteException with a 401 code, it's an expected state for unauthenticated users.
+    if (error instanceof Error && error.name === 'AppwriteException' && (error as any).code === 401) {
+      // This is not an application error, but an expected state. Return gracefully.
+      return { isValid: false, user: null, session: null };
+    }
+    // For any other unexpected errors, log them.
+    console.error('An unexpected error occurred during session validation:', error);
     return { isValid: false, user: null, session: null };
   }
 };
