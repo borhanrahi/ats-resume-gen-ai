@@ -6,6 +6,9 @@ import AnalysisResults from '@/components/results/AnalysisResults';
 import ErrorState from '@/components/results/ErrorState';
 import NonResumeError from '@/components/results/NonResumeError';
 import LoadingState from '@/components/results/LoadingState';
+import { AdPlacementOptimizer } from '@/components/monetization';
+import { useAuth } from '@/lib/auth/AuthContext';
+import { useUsageTracking } from '@/lib/storage/localStorage';
 
 interface AnalysisResult {
   fileName: string;
@@ -63,6 +66,8 @@ interface AnalysisResult {
 
 export default function ResultsPage() {
   const router = useRouter();
+  const { user } = useAuth();
+  const { usage } = useUsageTracking();
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -133,9 +138,16 @@ export default function ResultsPage() {
   }
 
   return (
-    <AnalysisResults 
-      analysis={result.analysis}
-      fileName={result.fileName}
-    />
+    <AdPlacementOptimizer
+      userTier={user ? 'premium' : 'free'}
+      pageType="results"
+      usageCount={usage?.dailyCount || 0}
+      maxUsage={5}
+    >
+      <AnalysisResults 
+        analysis={result.analysis}
+        fileName={result.fileName}
+      />
+    </AdPlacementOptimizer>
   );
 }

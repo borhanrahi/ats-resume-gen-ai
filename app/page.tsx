@@ -8,10 +8,15 @@ import UploadModal from '@/components/upload/UploadModal';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import CTASection from '@/components/home/CTASection';
 import PingTest from '@/components/PingTest';
+import { AdPlacementOptimizer } from '@/components/monetization';
+import { useAuth } from '@/lib/auth/AuthContext';
+import { useUsageTracking } from '@/lib/storage/localStorage';
 
 
 export default function Home() {
   const router = useRouter();
+  const { user } = useAuth();
+  const { usage } = useUsageTracking();
   const [showUploadModal, setShowUploadModal] = useState(false);
 
   const handleAnalysisClick = (type: 'normal' | 'job') => {
@@ -24,35 +29,42 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Mobile-first landing page with progressive enhancement */}
-      <HeroSection onQuickStart={handleQuickStart} />
-      
-      {/* Appwrite Connection Test */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-4">Test Appwrite Connection</h2>
-            <p className="text-muted-foreground">
-              Verify that your Appwrite configuration is working correctly.
-            </p>
+    <AdPlacementOptimizer
+      userTier={user ? 'premium' : 'free'}
+      pageType="landing"
+      usageCount={usage?.dailyCount || 0}
+      maxUsage={5}
+    >
+      <div className="min-h-screen bg-background">
+        {/* Mobile-first landing page with progressive enhancement */}
+        <HeroSection onQuickStart={handleQuickStart} />
+        
+        {/* Appwrite Connection Test */}
+        {/* <section className="py-16 px-4">
+          <div className="container mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4">Test Appwrite Connection</h2>
+              <p className="text-muted-foreground">
+                Verify that your Appwrite configuration is working correctly.
+              </p>
+            </div>
+            <PingTest />
           </div>
-          <PingTest />
-        </div>
-      </section>
-      
-      <AnalysisOptions onAnalysisClick={handleAnalysisClick} />
-      <FeaturesSection />
-      <CTASection onGetStarted={handleQuickStart} />
-      
-      {/* Upload Modal - kept for backward compatibility */}
-      {showUploadModal && (
-        <UploadModal
-          isOpen={showUploadModal}
-          onClose={() => setShowUploadModal(false)}
-          analysisType="normal"
-        />
-      )}
-    </div>
+        </section> */}
+        
+        <AnalysisOptions onAnalysisClick={handleAnalysisClick} />
+        <FeaturesSection />
+        <CTASection onGetStarted={handleQuickStart} />
+        
+        {/* Upload Modal - kept for backward compatibility */}
+        {showUploadModal && (
+          <UploadModal
+            isOpen={showUploadModal}
+            onClose={() => setShowUploadModal(false)}
+            analysisType="normal"
+          />
+        )}
+      </div>
+    </AdPlacementOptimizer>
   );
 }

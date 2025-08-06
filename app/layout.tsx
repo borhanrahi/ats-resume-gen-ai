@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import AuthStatusIndicator from '@/components/layout/AuthStatusIndicator';
 import StructuredData from "@/components/layout/StructuredData";
+import { AdSenseScript } from "@/components/monetization";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -170,6 +171,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <StructuredData />
+        <AdSenseScript />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />

@@ -7,6 +7,9 @@ import DocumentUploader from '@/components/upload/DocumentUploader';
 import JobDescriptionUploader from '@/components/upload/JobDescriptionUploader';
 import { UsageGuard } from '@/components/analysis/UsageGuard';
 import { UsageDisplay } from '@/components/analysis/UsageDisplay';
+import { AdPlacementOptimizer } from '@/components/monetization';
+import { useAuth } from '@/lib/auth/AuthContext';
+import { useUsageTracking } from '@/lib/storage/localStorage';
 
 type AnalysisType = 'normal' | 'job';
 
@@ -23,6 +26,8 @@ interface AnalysisState {
 function AnalyzePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useAuth();
+  const { usage } = useUsageTracking();
   const [state, setState] = useState<AnalysisState>({
     step: 'upload',
     analysisType: (searchParams.get('type') as AnalysisType) || 'normal',
@@ -137,32 +142,38 @@ function AnalyzePageContent() {
     (state.analysisType === 'normal' || (state.analysisType === 'job' && state.jobDescription?.trim()));
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Mobile-First Header */}
-      <div className="bg-card border-b border-border sticky top-16 z-40">
-        <div className="container-mobile py-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => router.back()}
-              className="btn-touch p-2 hover:bg-muted rounded-lg transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-lg sm:text-xl font-semibold text-foreground truncate">
-                Resume Analysis
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {state.analysisType === 'normal' ? 'ATS Compatibility Check' : 'Job-Specific Analysis'}
-              </p>
+    <AdPlacementOptimizer
+      userTier={user ? 'premium' : 'free'}
+      pageType="analysis"
+      usageCount={usage.count}
+      maxUsage={5}
+    >
+      <div className="min-h-screen bg-background">
+        {/* Mobile-First Header */}
+        <div className="bg-card border-b border-border sticky top-16 z-40">
+          <div className="container-mobile py-4">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => router.back()}
+                className="btn-touch p-2 hover:bg-muted rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-lg sm:text-xl font-semibold text-foreground truncate">
+                  Resume Analysis
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  {state.analysisType === 'normal' ? 'ATS Compatibility Check' : 'Job-Specific Analysis'}
+                </p>
+              </div>
+              <UsageDisplay />
             </div>
-            <UsageDisplay />
           </div>
         </div>
-      </div>
 
-      <div className="container-mobile py-6 sm:py-8">
-        <UsageGuard>
+        <div className="container-mobile py-6 sm:py-8">
+          <UsageGuard>
           {/* Analysis Type Selector - Mobile First */}
           <div className="mb-8">
             <h2 className="text-base sm:text-lg font-semibold text-foreground mb-4">
@@ -310,6 +321,7 @@ function AnalyzePageContent() {
         </UsageGuard>
       </div>
     </div>
+    </AdPlacementOptimizer>
   );
 }
 

@@ -164,3 +164,6 @@ export const setItem = LocalStorageManager.setItem;
 export const removeItem = LocalStorageManager.removeItem;
 export const clearStorage = LocalStorageManager.clear;
 export const isStorageAvailable = LocalStorageManager.isAvailable;
+
+// Re-export usage tracking hook for convenience
+export { useUsageLimit as useUsageTracking } from '@/lib/hooks/useUsageLimit';
