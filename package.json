@@ -26,6 +26,7 @@
     "appwrite": "^18.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "docx": "^9.5.1",
     "docx-template": "^2.2.5",
     "framer-motion": "^12.23.12",
     "html-docx-js": "^0.3.1",

@@ -22,14 +22,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DragDropBlocks } from './DragDropBlocks';
 import { ResumePreview } from './ResumePreview';
 import { BlockEditor } from './BlockEditor';
+import { ExportOptions } from './ExportOptions';
 import { ResumeBlock, EditorState, DragDropResult } from '@/types/editor';
 import { ResumeData } from '@/types/resume';
+import { ExportResult } from '@/lib/utils/exportUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 interface ResumeEditorProps {
   initialData?: ResumeData;
   onSave?: (data: ResumeData) => void;
   onExport?: (format: 'pdf' | 'docx') => void;
+  onExportComplete?: (result: ExportResult) => void;
   className?: string;
 }
 
@@ -65,6 +68,7 @@ export function ResumeEditor({
   initialData,
   onSave,
   onExport,
+  onExportComplete,
   className = ''
 }: ResumeEditorProps) {
   const [editorState, setEditorState] = useState<EditorState>({
@@ -79,6 +83,7 @@ export function ResumeEditor({
 
   const [viewMode, setViewMode] = useState<'mobile' | 'desktop'>('mobile');
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
+  const [showExportOptions, setShowExportOptions] = useState(false);
 
   // Mobile-first responsive handling
   const [isMobile, setIsMobile] = useState(true);
@@ -199,10 +204,18 @@ export function ResumeEditor({
   }, [editorState.blocks, onSave]);
 
   const handleExport = useCallback((format: 'pdf' | 'docx') => {
-    if (onExport) {
-      onExport(format);
+    // Always show export options for both formats
+    setShowExportOptions(true);
+  }, []);
+
+  const handleExportComplete = useCallback((result: ExportResult) => {
+    if (onExportComplete) {
+      onExportComplete(result);
     }
-  }, [onExport]);
+    if (result.success) {
+      setShowExportOptions(false);
+    }
+  }, [onExportComplete]);
 
   const selectedBlock = editorState.selectedBlockId 
     ? editorState.blocks.find(b => b.id === editorState.selectedBlockId)
@@ -265,7 +278,7 @@ export function ResumeEditor({
               className="min-h-[44px]"
             >
               <Download className="w-4 h-4 mr-2" />
-              Export
+              Export PDF
             </Button>
           </div>
         </div>
@@ -286,6 +299,14 @@ export function ResumeEditor({
           </Tabs>
         )}
       </div>
+
+      {/* Export Options Modal */}
+      <ExportOptions
+        blocks={editorState.blocks}
+        isOpen={showExportOptions}
+        onClose={() => setShowExportOptions(false)}
+        onExportComplete={handleExportComplete}
+      />
 
       {/* Main content */}
       <div className="flex-1 overflow-hidden">
