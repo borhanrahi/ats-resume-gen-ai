@@ -83,7 +83,7 @@ class BundleOptimizer {
     this.loadedChunks.add(actualChunkName);
     
     // Perform the actual import
-    return import(/* webpackChunkName: "[request]" */ importPath);
+    return import(`../../${importPath}`);
   }
 
   /**

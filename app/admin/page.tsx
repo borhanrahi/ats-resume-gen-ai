@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import AdminLogin from '@/components/admin/AdminLogin';
 import AdminSidebar from '@/components/admin/AdminSidebar';
-import StatsOverview from '@/components/admin/StatsOverview';
+import AdminDashboard from '@/components/admin/AdminDashboard';
 import ModelManagement from '@/components/admin/ModelManagement';
+import UserManagement from '@/components/admin/UserManagement';
 import { LogOut } from 'lucide-react';
 
 interface ModelConfig {
@@ -170,7 +171,7 @@ export default function AdminPage() {
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <StatsOverview />;
+        return <AdminDashboard onNavigate={setActiveSection} />;
       case 'models':
         return (
           <ModelManagement
@@ -185,12 +186,7 @@ export default function AdminPage() {
           />
         );
       case 'users':
-        return (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-semibold text-foreground mb-2">User Management</h3>
-            <p className="text-muted-foreground">Coming soon...</p>
-          </div>
-        );
+        return <UserManagement />;
       case 'payments':
         return (
           <div className="text-center py-12">

@@ -352,7 +352,7 @@ export function withLoadingManager<T extends object>(
       };
     }, [startLoading, stopLoading]);
 
-    return <Component {...props} ref={ref} />;
+    return React.createElement(Component, { ...props, ref } as T & { ref: unknown });
   });
 }
 
