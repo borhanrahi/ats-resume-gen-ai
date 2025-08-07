@@ -50,3 +50,36 @@ export interface JobDescription {
   experienceLevel: string;
   jobTitle: string;
 }
+
+export interface GrammarAnalysisResult {
+  grammarIssues: GrammarIssue[];
+  overallScore: number;
+  suggestions: {
+    summary: string[];
+    titles: string[];
+    improvements: string[];
+  };
+  readabilityScore: number;
+  toneAnalysis: {
+    score: number;
+    feedback: string;
+    suggestions: string[];
+  };
+}
+
+export interface ContentAnalysisResult {
+  contentQuality: number;
+  strengthsWeaknesses: {
+    strengths: string[];
+    weaknesses: string[];
+  };
+  suggestions: {
+    summaryOptions: string[];
+    titleOptions: string[];
+    contentImprovements: string[];
+  };
+  professionalTone: {
+    score: number;
+    feedback: string;
+  };
+}

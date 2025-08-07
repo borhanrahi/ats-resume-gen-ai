@@ -79,3 +79,18 @@ export interface SystemLog {
   adminId?: string;
   createdAt: Date;
 }
+
+export interface FallbackChainConfig {
+  tier: 'free' | 'premium';
+  primaryModel: string;
+  fallbackModels: string[];
+  maxRetries: number;
+  timeoutMs: number;
+}
+
+export interface ModelConfigUpdate {
+  modelId: string;
+  changes: Partial<AIModelConfig>;
+  adminId: string;
+  reason: string;
+}
