@@ -6,6 +6,10 @@ import { AuthProvider } from "@/lib/auth/AuthContext";
 import AuthStatusIndicator from '@/components/layout/AuthStatusIndicator';
 import StructuredData from "@/components/layout/StructuredData";
 import { AdSenseScript } from "@/components/monetization";
+import ErrorBoundary from "@/components/layout/ErrorBoundary";
+import OfflineIndicator from "@/components/layout/OfflineIndicator";
+import GlobalLoadingIndicator from "@/components/layout/GlobalLoadingIndicator";
+import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -187,16 +191,22 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          defaultTheme="system"
-          storageKey="ats-theme"
-        >
-          <AuthProvider>
-            <AuthStatusIndicator />
-            <Navigation />
-            {children}
-          </AuthProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ToastProvider>
+            <ThemeProvider
+              defaultTheme="system"
+              storageKey="ats-theme"
+            >
+              <AuthProvider>
+                <OfflineIndicator showDetails />
+                <GlobalLoadingIndicator variant="minimal" position="top" />
+                <AuthStatusIndicator />
+                <Navigation />
+                {children}
+              </AuthProvider>
+            </ThemeProvider>
+          </ToastProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
