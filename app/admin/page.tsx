@@ -209,7 +209,7 @@ export default function AdminPage() {
           </div>
         );
       default:
-        return <StatsOverview />;
+        return <AdminDashboard onNavigate={setActiveSection} />;
     }
   };
 

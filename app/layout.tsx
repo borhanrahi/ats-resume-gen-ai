@@ -194,23 +194,23 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ErrorBoundary>
-          <PerformanceProvider>
+          {/* <PerformanceProvider> */}
             <ToastProvider>
               <ThemeProvider
                 defaultTheme="system"
                 storageKey="ats-theme"
               >
                 <AuthProvider>
-                  <OfflineIndicator showDetails />
+                  {/* <OfflineIndicator showDetails /> */}
                   <GlobalLoadingIndicator variant="minimal" position="top" />
                   <AuthStatusIndicator />
                   <Navigation />
                   {children}
-                  <PerformanceIndicator />
+                  {/* <PerformanceIndicator /> */}
                 </AuthProvider>
               </ThemeProvider>
             </ToastProvider>
-          </PerformanceProvider>
+          {/* </PerformanceProvider> */}
         </ErrorBoundary>
       </body>
     </html>

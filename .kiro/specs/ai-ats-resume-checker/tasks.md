@@ -286,7 +286,6 @@
 
 - [x] 18. Create admin dashboard and user management
 
-
 - [x] 18.1 Build admin dashboard home
 
   - Create AdminDashboard.tsx with system overview and key metrics

@@ -81,9 +81,17 @@ class BundleOptimizer {
     
     // Mark chunk as loaded
     this.loadedChunks.add(actualChunkName);
-    
+
     // Perform the actual import
-    return import(`../../${importPath}`);
+    const module = await import(`../../${importPath}`);
+    
+    // If the imported module is a string (e.g., from a .md file), return null 
+    // so it's not treated as a component.
+    if (typeof module.default === 'string') {
+      return null;
+    }
+
+    return module;
   }
 
   /**

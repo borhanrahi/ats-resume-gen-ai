@@ -3,6 +3,8 @@
  * Provides offline state management, queue management, and user feedback
  */
 
+import React from 'react';
+
 export interface OfflineState {
   isOnline: boolean;
   wasOffline: boolean;
@@ -323,15 +325,17 @@ class OfflineManager {
    */
   private updateCapabilities() {
     try {
-      const hasLocalData = localStorage.getItem('analysis-cache') !== null;
-      const hasTemplates = localStorage.getItem('resume-templates') !== null;
-      
-      this.capabilities = {
-        canAnalyzeOffline: false, // AI analysis always requires internet
-        canExportOffline: hasLocalData || hasTemplates,
-        canSaveOffline: true, // Can always save to localStorage
-        hasOfflineData: hasLocalData,
-      };
+      if (typeof window !== 'undefined') {
+        const hasLocalData = localStorage.getItem('analysis-cache') !== null;
+        const hasTemplates = localStorage.getItem('resume-templates') !== null;
+        
+        this.capabilities = {
+          canAnalyzeOffline: false, // AI analysis always requires internet
+          canExportOffline: hasLocalData || hasTemplates,
+          canSaveOffline: true, // Can always save to localStorage
+          hasOfflineData: hasLocalData,
+        };
+      }
     } catch (error) {
       console.error('Failed to update offline capabilities:', error);
     }
@@ -391,7 +395,9 @@ class OfflineManager {
    */
   private persistState() {
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
+      }
     } catch (error) {
       console.error('Failed to persist offline state:', error);
     }
@@ -402,7 +408,9 @@ class OfflineManager {
    */
   private persistQueue() {
     try {
-      localStorage.setItem(this.QUEUE_KEY, JSON.stringify(this.actionQueue));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(this.QUEUE_KEY, JSON.stringify(this.actionQueue));
+      }
     } catch (error) {
       console.error('Failed to persist action queue:', error);
     }
@@ -413,15 +421,17 @@ class OfflineManager {
    */
   private loadPersistedState() {
     try {
-      const persistedState = localStorage.getItem(this.STORAGE_KEY);
-      if (persistedState) {
-        const parsed = JSON.parse(persistedState);
-        this.state = { ...this.state, ...parsed };
-      }
+      if (typeof window !== 'undefined') {
+        const persistedState = localStorage.getItem(this.STORAGE_KEY);
+        if (persistedState) {
+          const parsed = JSON.parse(persistedState);
+          this.state = { ...this.state, ...parsed };
+        }
 
-      const persistedQueue = localStorage.getItem(this.QUEUE_KEY);
-      if (persistedQueue) {
-        this.actionQueue = JSON.parse(persistedQueue);
+        const persistedQueue = localStorage.getItem(this.QUEUE_KEY);
+        if (persistedQueue) {
+          this.actionQueue = JSON.parse(persistedQueue);
+        }
       }
     } catch (error) {
       console.error('Failed to load persisted offline state:', error);
@@ -434,8 +444,10 @@ class OfflineManager {
   clearOfflineData() {
     this.actionQueue = [];
     try {
-      localStorage.removeItem(this.STORAGE_KEY);
-      localStorage.removeItem(this.QUEUE_KEY);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(this.STORAGE_KEY);
+        localStorage.removeItem(this.QUEUE_KEY);
+      }
     } catch (error) {
       console.error('Failed to clear offline data:', error);
     }
@@ -455,48 +467,75 @@ class OfflineManager {
       })),
     };
   }
+
+  on(event: string, listener: (data: any) => void) {
+    if (event === 'state-change') {
+      this.listeners.add(listener);
+    }
+  }
+
+  off(event: string, listener: (data: any) => void) {
+    if (event === 'state-change') {
+      this.listeners.delete(listener);
+    }
+  }
 }
 
-// Create singleton instance
-export const offlineManager = new OfflineManager();
+let offlineManager: OfflineManager;
+
+function getOfflineManager(): OfflineManager {
+  if (typeof window === 'undefined') {
+    // Return a mock/dummy manager on the server
+    return {
+      getState: () => ({ isOnline: true, wasOffline: false, lastOnlineTime: 0, offlineDuration: 0 }),
+      getCapabilities: () => ({ canAnalyzeOffline: false, canExportOffline: false, canSaveOffline: false, hasOfflineData: false }),
+      on: () => {},
+      off: () => {},
+    } as any;
+  }
+
+  if (!offlineManager) {
+    offlineManager = new OfflineManager();
+  }
+  return offlineManager;
+}
 
 /**
- * React hook for offline state management
+ * Custom hook to use the offline state in React components
  */
 export function useOfflineState() {
-  const [state, setState] = React.useState<OfflineState>(offlineManager.getState());
+  const manager = getOfflineManager();
+  const [state, setState] = React.useState<OfflineState>(manager.getState());
   const [capabilities, setCapabilities] = React.useState<OfflineCapabilities>(
-    offlineManager.getCapabilities()
+    manager.getCapabilities()
   );
 
   React.useEffect(() => {
-    const unsubscribe = offlineManager.subscribe(setState);
-    
-    // Update capabilities when state changes
-    setCapabilities(offlineManager.getCapabilities());
-    
-    return unsubscribe;
+    // On the client, get the real manager and set up listeners
+    const clientManager = getOfflineManager();
+
+    const handleStateChange = (newState: OfflineState) => {
+      setState(newState);
+    };
+
+    const handleCapabilitiesChange = (newCapabilities: OfflineCapabilities) => {
+      setCapabilities(newCapabilities);
+    };
+
+    clientManager.on('state-change', handleStateChange);
+    clientManager.on('capabilities-change', handleCapabilitiesChange);
+
+    // Initial sync
+    setState(clientManager.getState());
+    setCapabilities(clientManager.getCapabilities());
+
+    return () => {
+      clientManager.off('state-change', handleStateChange);
+      clientManager.off('capabilities-change', handleCapabilitiesChange);
+    };
   }, []);
 
-  const queueAction = React.useCallback((type: string, data: any, maxRetries?: number) => {
-    return offlineManager.queueAction(type, data, maxRetries);
-  }, []);
-
-  const isFeatureAvailable = React.useCallback((feature: keyof OfflineCapabilities) => {
-    return offlineManager.isFeatureAvailableOffline(feature);
-  }, []);
-
-  const getOfflineMessage = React.useCallback((action: string) => {
-    return offlineManager.getOfflineMessage(action);
-  }, []);
-
-  return {
-    ...state,
-    capabilities,
-    queueAction,
-    isFeatureAvailable,
-    getOfflineMessage,
-  };
+  return { state, capabilities, manager };
 }
 
-export default offlineManager;
+export default getOfflineManager;
