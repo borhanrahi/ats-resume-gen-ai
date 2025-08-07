@@ -1,5 +1,7 @@
 import { OpenRouterClient } from './openRouterClient';
 import { GeminiClient } from './geminiClient';
+import { analysisCache } from '@/lib/utils/cacheManager';
+import { performanceMonitor } from '@/lib/utils/performanceMonitor';
 import type { ATSAnalysis, JobDescription, Recommendation, KeywordAnalysis, GrammarIssue } from '@/types/analysis';
 import type { ResumeData } from '@/types/resume';
 
@@ -52,16 +54,32 @@ export class AnalysisEngine {
    * Main analysis method that orchestrates all AI calls
    */
   async analyze(options: AnalysisOptions): Promise<AnalysisResult> {
-    const startTime = Date.now();
-    const errors: string[] = [];
-    const warnings: string[] = [];
+    return performanceMonitor.trackAnalysisPerformance(async () => {
+      const startTime = Date.now();
+      const errors: string[] = [];
+      const warnings: string[] = [];
 
-    try {
-      // Validate inputs
-      this.validateInputs(options);
+      try {
+        // Validate inputs
+        this.validateInputs(options);
 
-      // Extract resume content for analysis
-      const resumeContent = this.extractResumeContent(options.resumeData);
+        // Extract resume content for analysis
+        const resumeContent = this.extractResumeContent(options.resumeData);
+
+        // Check cache first
+        const cacheKey = analysisCache.generateAnalysisKey(
+          resumeContent,
+          options.jobDescription?.content
+        );
+        
+        const cachedResult = analysisCache.get<AnalysisResult>(cacheKey);
+        if (cachedResult) {
+          console.log('📦 Using cached analysis result');
+          return {
+            ...cachedResult,
+            processingTime: Date.now() - startTime, // Update processing time
+          };
+        }
 
       // Perform ATS analysis using OpenRouter
       const atsAnalysis = await this.performATSAnalysis(
@@ -113,7 +131,7 @@ export class AnalysisEngine {
 
       const processingTime = Date.now() - startTime;
 
-      return {
+      const result: AnalysisResult = {
         score: finalScore,
         breakdown: atsAnalysis.breakdown,
         recommendations: allRecommendations,
@@ -125,14 +143,21 @@ export class AnalysisEngine {
         errors,
         warnings,
       };
-    } catch (error) {
-      const processingTime = Date.now() - startTime;
-      const errorMessage = error instanceof Error ? error.message : 'Unknown analysis error';
-      errors.push(errorMessage);
 
-      // Return a fallback analysis result
-      return this.createFallbackResult(processingTime, errors, warnings);
-    }
+      // Cache the result for future use (1 hour TTL)
+      analysisCache.set(cacheKey, result, 60 * 60 * 1000);
+      console.log('💾 Analysis result cached');
+
+      return result;
+      } catch (error) {
+        const processingTime = Date.now() - startTime;
+        const errorMessage = error instanceof Error ? error.message : 'Unknown analysis error';
+        errors.push(errorMessage);
+
+        // Return a fallback analysis result
+        return this.createFallbackResult(processingTime, errors, warnings);
+      }
+    });
   }
 
   /**

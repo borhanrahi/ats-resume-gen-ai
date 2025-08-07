@@ -10,6 +10,8 @@ import ErrorBoundary from "@/components/layout/ErrorBoundary";
 import OfflineIndicator from "@/components/layout/OfflineIndicator";
 import GlobalLoadingIndicator from "@/components/layout/GlobalLoadingIndicator";
 import { ToastProvider } from "@/components/ui/toast";
+import PerformanceProvider from "@/components/layout/PerformanceProvider";
+import { PerformanceIndicator } from "@/components/ui/performance-dashboard";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -192,20 +194,23 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ErrorBoundary>
-          <ToastProvider>
-            <ThemeProvider
-              defaultTheme="system"
-              storageKey="ats-theme"
-            >
-              <AuthProvider>
-                <OfflineIndicator showDetails />
-                <GlobalLoadingIndicator variant="minimal" position="top" />
-                <AuthStatusIndicator />
-                <Navigation />
-                {children}
-              </AuthProvider>
-            </ThemeProvider>
-          </ToastProvider>
+          <PerformanceProvider>
+            <ToastProvider>
+              <ThemeProvider
+                defaultTheme="system"
+                storageKey="ats-theme"
+              >
+                <AuthProvider>
+                  <OfflineIndicator showDetails />
+                  <GlobalLoadingIndicator variant="minimal" position="top" />
+                  <AuthStatusIndicator />
+                  <Navigation />
+                  {children}
+                  <PerformanceIndicator />
+                </AuthProvider>
+              </ThemeProvider>
+            </ToastProvider>
+          </PerformanceProvider>
         </ErrorBoundary>
       </body>
     </html>

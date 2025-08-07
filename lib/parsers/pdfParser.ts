@@ -1,3 +1,5 @@
+import { performanceMonitor } from '@/lib/utils/performanceMonitor';
+
 // Dynamic import for client-side only
 let pdfjsLib: typeof import('pdfjs-dist') | null = null;
 let PDFDocumentProxy: any = null;
@@ -67,7 +69,8 @@ export class PDFParser {
     file: File | ArrayBuffer, 
     fileName?: string
   ): Promise<PDFParseResult> {
-    try {
+    return performanceMonitor.trackDocumentParsePerformance(async () => {
+      try {
       // Initialize PDF.js on client side only
       await initPDFJS();
       
@@ -216,18 +219,19 @@ export class PDFParser {
 
       return result;
 
-    } catch (error) {
-      if (error instanceof PDFParseException) {
-        throw error;
-      }
+      } catch (error) {
+        if (error instanceof PDFParseException) {
+          throw error;
+        }
 
-      // Handle unexpected errors
-      throw new PDFParseException({
-        code: 'PARSE_ERROR',
-        message: 'An unexpected error occurred while parsing the PDF',
-        details: error instanceof Error ? error.message : String(error)
-      });
-    }
+        // Handle unexpected errors
+        throw new PDFParseException({
+          code: 'PARSE_ERROR',
+          message: 'An unexpected error occurred while parsing the PDF',
+          details: error instanceof Error ? error.message : String(error)
+        });
+      }
+    });
   }
 
   /**
