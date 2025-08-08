@@ -135,8 +135,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Analysis failed:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
     return NextResponse.json({ 
-      error: `Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}` 
+      error: `Analysis failed: ${errorMessage}`,
+      details: errorStack
     }, { status: 500 });
   }
 }
