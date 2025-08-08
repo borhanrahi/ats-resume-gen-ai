@@ -1,5 +1,5 @@
+import { analysisEngine } from '@/lib/ai/analysisEngine';
 import { NextRequest, NextResponse } from 'next/server';
-import { analysisEngine } from '../../../lib/analysis/analysis-engine';
 import { v4 as uuidv4 } from 'uuid';
 
 // In-memory storage for demo (replace with database later)
