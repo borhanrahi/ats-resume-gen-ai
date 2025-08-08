@@ -118,18 +118,12 @@ components/monetization/
 ├── PremiumUpgradePrompt.tsx
 ├── ConversionTracker.tsx
 ├── AdPlacementOptimizer.tsx
-├── index.ts
-└── __tests__/
-    ├── AdUnit.test.tsx
-    ├── PremiumUpgradePrompt.test.tsx
-    └── ConversionTracker.test.tsx
+└── index.ts
 
 lib/monetization/
 ├── adConfig.ts
 ├── conversionFunnel.ts
-├── index.ts
-└── __tests__/
-    └── conversionFunnel.test.ts
+└── index.ts
 ```
 
 ## Next Steps for Production

@@ -192,15 +192,9 @@ The component handles various error scenarios:
 - **PDF.js**: Uses PDF.js for client-side PDF parsing
 - **Mammoth**: Uses Mammoth.js for DOCX parsing
 
-## Testing
+## Usage
 
-Run the component tests:
-
-```bash
-npm test components/upload/__tests__/DocumentUploader.test.tsx
-```
-
-The test suite covers:
+The component provides:
 - Mobile-first responsive behavior
 - File validation and error handling
 - Touch-friendly interactions
