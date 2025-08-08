@@ -40,7 +40,7 @@ export default function Home() {
         <HeroSection onQuickStart={handleQuickStart} />
         
         {/* Appwrite Connection Test */}
-        {/* <section className="py-16 px-4">
+        <section className="py-16 px-4">
           <div className="container mx-auto">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-4">Test Appwrite Connection</h2>
@@ -50,7 +50,7 @@ export default function Home() {
             </div>
             <PingTest />
           </div>
-        </section> */}
+        </section>
         
         <AnalysisOptions onAnalysisClick={handleAnalysisClick} />
         <FeaturesSection />

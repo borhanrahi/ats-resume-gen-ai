@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ArrowLeft, FileText, Briefcase, Zap, Shield } from 'lucide-react';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ClientOnly } from '@/components/ClientOnly';
 import DocumentUploader from '@/components/upload/DocumentUploader';
+import SimpleUploader from '@/components/upload/SimpleUploader';
 import JobDescriptionUploader from '@/components/upload/JobDescriptionUploader';
 import { UsageGuard } from '@/components/analysis/UsageGuard';
 import { UsageDisplay } from '@/components/analysis/UsageDisplay';
@@ -26,8 +29,7 @@ interface AnalysisState {
 function AnalyzePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
-  const { usage } = useUsageTracking();
+  const [isClient, setIsClient] = useState(false);
   const [state, setState] = useState<AnalysisState>({
     step: 'upload',
     analysisType: (searchParams.get('type') as AnalysisType) || 'normal',
@@ -37,6 +39,29 @@ function AnalyzePageContent() {
     progress: 0,
     error: null
   });
+
+  // Always call hooks, but handle errors gracefully
+  let user = null;
+  let usage = { count: 0, dailyCount: 0, totalAnalyses: 0 };
+
+  try {
+    const authResult = useAuth();
+    user = authResult.user;
+  } catch (error) {
+    console.error('Error loading auth data:', error);
+  }
+
+  try {
+    const usageResult = useUsageTracking();
+    usage = usageResult.usage || usage;
+  } catch (error) {
+    console.error('Error loading usage data:', error);
+  }
+
+  // Ensure we're on the client side before using hooks that depend on browser APIs
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Handle resume upload
   const handleResumeUpload = (result: { file: File; content: string }) => {
@@ -141,13 +166,33 @@ function AnalyzePageContent() {
   const isReadyToAnalyze = state.resumeContent && 
     (state.analysisType === 'normal' || (state.analysisType === 'job' && state.jobDescription?.trim()));
 
+  // Show loading state until client-side hydration is complete
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading analysis page...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <AdPlacementOptimizer
-      userTier={user ? 'premium' : 'free'}
-      pageType="analysis"
-      usageCount={usage.count}
-      maxUsage={5}
-    >
+    <ClientOnly fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading analysis page...</p>
+        </div>
+      </div>
+    }>
+      <AdPlacementOptimizer
+        userTier={user ? 'premium' : 'free'}
+        pageType="analysis"
+        usageCount={usage?.count || 0}
+        maxUsage={5}
+      >
       <div className="min-h-screen bg-background">
         {/* Mobile-First Header */}
         <div className="bg-card border-b border-border sticky top-16 z-40">
@@ -167,13 +212,21 @@ function AnalyzePageContent() {
                   {state.analysisType === 'normal' ? 'ATS Compatibility Check' : 'Job-Specific Analysis'}
                 </p>
               </div>
-              <UsageDisplay />
+              <ClientOnly>
+                <UsageDisplay />
+              </ClientOnly>
             </div>
           </div>
         </div>
 
         <div className="container-mobile py-6 sm:py-8">
-          <UsageGuard>
+          <ClientOnly fallback={
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading...</p>
+            </div>
+          }>
+            <UsageGuard>
           {/* Analysis Type Selector - Mobile First */}
           <div className="mb-8">
             <h2 className="text-base sm:text-lg font-semibold text-foreground mb-4">
@@ -239,12 +292,36 @@ function AnalyzePageContent() {
               <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4">
                 Upload Your Resume
               </h3>
-              <DocumentUploader
-                onUploadComplete={handleResumeUpload}
-                onUploadError={(error) => setState(prev => ({ ...prev, error }))}
-                className="w-full"
-                showPreview={true}
-              />
+              <ClientOnly fallback={
+                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                  <div className="animate-pulse">
+                    <div className="w-12 h-12 mx-auto bg-gray-200 rounded-full mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto"></div>
+                  </div>
+                </div>
+              }>
+                <SimpleUploader
+                  onFileSelect={(file) => {
+                    // Simple file selection handler for testing
+                    setState(prev => ({
+                      ...prev,
+                      resumeFile: file,
+                      resumeContent: 'Test content from ' + file.name,
+                      error: null
+                    }));
+                  }}
+                  onError={(error) => setState(prev => ({ ...prev, error }))}
+                />
+                
+                {/* Original uploader - commented for testing */}
+                {/* <DocumentUploader
+                  onUploadComplete={handleResumeUpload}
+                  onUploadError={(error) => setState(prev => ({ ...prev, error }))}
+                  className="w-full"
+                  showPreview={true}
+                /> */}
+              </ClientOnly>
             </div>
 
             {/* Job Description Input - Only for job-specific analysis */}
@@ -253,11 +330,19 @@ function AnalyzePageContent() {
                 <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4">
                   Job Description
                 </h3>
-                <JobDescriptionUploader
-                  onContentChange={handleJobDescriptionChange}
-                  placeholder="Paste the complete job description here..."
-                  className="w-full"
-                />
+                <ClientOnly fallback={
+                  <div className="border border-border rounded-lg p-4">
+                    <div className="animate-pulse">
+                      <div className="h-32 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                }>
+                  <JobDescriptionUploader
+                    onContentChange={handleJobDescriptionChange}
+                    placeholder="Paste the complete job description here..."
+                    className="w-full"
+                  />
+                </ClientOnly>
               </div>
             )}
 
@@ -318,24 +403,37 @@ function AnalyzePageContent() {
               </div>
             </div>
           </div>
-        </UsageGuard>
-      </div>
+            </UsageGuard>
+          </ClientOnly>
+        </div>
     </div>
-    </AdPlacementOptimizer>
+      </AdPlacementOptimizer>
+    </ClientOnly>
   );
 }
 
 export default function AnalyzePage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading analysis page...</p>
+    <ErrorBoundary>
+      <Suspense fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading analysis page...</p>
+          </div>
         </div>
-      </div>
-    }>
-      <AnalyzePageContent />
-    </Suspense>
+      }>
+        <ClientOnly fallback={
+          <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Initializing...</p>
+            </div>
+          </div>
+        }>
+          <AnalyzePageContent />
+        </ClientOnly>
+      </Suspense>
+    </ErrorBoundary>
   );
 }

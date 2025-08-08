@@ -87,8 +87,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // Initialize auth state on mount
+  // Initialize auth state on mount - only on client side
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      // On server side, just set loading to false
+      setState(prev => ({ ...prev, isLoading: false }));
+      return;
+    }
+
     console.log('[AuthContext] Initializing authentication...');
     const timer = setTimeout(() => {
       console.warn('[AuthContext] Auth check timed out. Forcing loading state to false.');

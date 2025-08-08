@@ -35,8 +35,8 @@ export function AdPlacementOptimizer({
   }
 
   useEffect(() => {
-    // Set up intersection observer for ad viewability tracking
-    if (typeof window !== 'undefined') {
+    // Set up intersection observer for ad viewability tracking - only on client side
+    if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
       intersectionObserver.current = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {

@@ -38,7 +38,9 @@ export function UsageDisplay({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadUsageData();
+    if (typeof window !== 'undefined') {
+      loadUsageData();
+    }
   }, []);
 
   const loadUsageData = () => {

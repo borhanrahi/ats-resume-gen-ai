@@ -53,6 +53,16 @@ export class UsageTracker {
    * Get current usage data for the user
    */
   getCurrentUsage(): UserUsage {
+    // Return default values if not on client side
+    if (typeof window === 'undefined') {
+      return {
+        dailyCount: 0,
+        lastReset: new Date(),
+        totalAnalyses: 0,
+        isPremium: false
+      };
+    }
+
     const usageData = this.getUsageData();
     const today = new Date().toDateString();
     
@@ -79,6 +89,11 @@ export class UsageTracker {
    * Check if user can perform another analysis
    */
   canAnalyze(): boolean {
+    // Return true if not on client side (SSR)
+    if (typeof window === 'undefined') {
+      return true;
+    }
+    
     const usage = this.getCurrentUsage();
     return usage.dailyCount < DAILY_LIMIT;
   }
@@ -87,6 +102,11 @@ export class UsageTracker {
    * Get remaining analyses for today
    */
   getRemainingAnalyses(): number {
+    // Return max if not on client side (SSR)
+    if (typeof window === 'undefined') {
+      return DAILY_LIMIT;
+    }
+    
     const usage = this.getCurrentUsage();
     return Math.max(0, DAILY_LIMIT - usage.dailyCount);
   }
@@ -209,6 +229,15 @@ export class UsageTracker {
   // Private methods
 
   private getUsageData(): UsageData {
+    // Return default data if not on client side
+    if (typeof window === 'undefined') {
+      return {
+        count: 0,
+        lastReset: new Date().toDateString(),
+        analyses: []
+      };
+    }
+
     try {
       const stored = localStorage.getItem(USAGE_STORAGE_KEY);
       if (stored) {
@@ -233,6 +262,11 @@ export class UsageTracker {
   }
 
   private saveUsageData(data: UsageData): void {
+    // Don't save if not on client side
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     try {
       localStorage.setItem(USAGE_STORAGE_KEY, JSON.stringify(data));
     } catch (error) {

@@ -46,9 +46,11 @@ export function useUsageLimit(): UseUsageLimitReturn {
     }
   }, []);
 
-  // Initialize usage data
+  // Initialize usage data only on client side
   useEffect(() => {
-    loadUsage();
+    if (typeof window !== 'undefined') {
+      loadUsage();
+    }
   }, [loadUsage]);
 
   // Check if user can analyze
