@@ -287,6 +287,7 @@ describe('Component Unit Tests', () => {
 
   describe('DashboardHome Component', () => {
     const mockUser = {
+      $id: 'user123',
       id: 'user123',
       name: 'John Doe',
       email: 'john@example.com',

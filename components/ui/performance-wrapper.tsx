@@ -97,7 +97,7 @@ export function usePerformanceTracking(componentName: string) {
   }, [componentName]);
 
   return {
-    trackOperation: <T>(operation: () => Promise<T>) =>
+    trackOperation: <T,>(operation: () => Promise<T>) =>
       performanceMonitor.trackComponentPerformance(componentName, operation),
   };
 }
@@ -186,7 +186,7 @@ interface VirtualizedListProps<T> {
   overscan?: number;
 }
 
-export function VirtualizedList<T>({
+export function VirtualizedList<T,>({
   items,
   renderItem,
   itemHeight,
@@ -284,7 +284,7 @@ export function DebouncedInput({
 /**
  * Memoized component wrapper for preventing unnecessary re-renders
  */
-export function MemoizedComponent<P extends object>({
+export function MemoizedComponent<P extends object,>({
   Component,
   props,
   dependencies = [],

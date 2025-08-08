@@ -1,0 +1,51 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_APPWRITE_ENDPOINT": "@appwrite_endpoint",
+    "NEXT_PUBLIC_APPWRITE_PROJECT_ID": "@appwrite_project_id",
+    "OPENROUTER_API_KEY": "@openrouter_api_key",
+    "GEMINI_API_KEY": "@gemini_api_key",
+    "NEXT_PUBLIC_ADSENSE_CLIENT_ID": "@adsense_client_id",
+    "WISP_CMS_API_KEY": "@wisp_cms_api_key",
+    "ADMIN_SECRET_KEY": "@admin_secret_key",
+    "ADMIN_JWT_SECRET": "@admin_jwt_secret",
+    "ADMIN_ALLOWED_IPS": "@admin_allowed_ips"
+  },
+  "headers": [
+    {
+      "source": "/api/admin/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/admin/:path*",
+      "destination": "/admin/:path*"
+    }
+  ]
+}

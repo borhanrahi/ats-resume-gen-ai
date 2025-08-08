@@ -157,21 +157,21 @@ describe('Core Functionality Unit Tests', () => {
         expect(result.jobTitle).toContain('Senior Software Engineer');
       });
 
-      it('should handle empty job descriptions', () => {
+      it('should handle empty job descriptions', async () => {
         const { JobDescriptionParser } = await import('@/lib/parsers/jobDescriptionParser');
         
-        const result = JobDescriptionParser.parse('');
+        const result = await JobDescriptionParser.parse('');
 
         expect(result.content).toBe('');
         expect(result.extractedKeywords).toHaveLength(0);
         expect(result.requiredSkills).toHaveLength(0);
       });
 
-      it('should extract experience requirements', () => {
+      it('should extract experience requirements', async () => {
         const { JobDescriptionParser } = await import('@/lib/parsers/jobDescriptionParser');
         
         const jobDescription = 'Looking for a candidate with 3-5 years of experience in software development.';
-        const result = JobDescriptionParser.parse(jobDescription);
+        const result = await JobDescriptionParser.parse(jobDescription);
 
         expect(result.experienceLevel).toMatch(/3-5 years/);
       });

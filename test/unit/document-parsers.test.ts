@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { parsePDF } from '../../lib/parsers/pdf-parser';
-import { parseDOCX } from '../../lib/parsers/docx-parser';
+import { parsePDF } from '../../lib/parsers/pdfParser';
+import { parseDOCX } from '../../lib/parsers/docxParser';
 
 // Mock the external libraries
 vi.mock('pdfjs-dist', () => ({
