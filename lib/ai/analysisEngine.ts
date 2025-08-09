@@ -758,7 +758,30 @@ export class AnalysisEngine {
   }
 }
 
-// Default analysis engine instance - only create if API keys are available
-export const analysisEngine = (process.env.OPENROUTER_API_KEY && process.env.GEMINI_API_KEY)
-  ? new AnalysisEngine()
-  : null;
+// Default analysis engine instance - create with available API keys
+export const analysisEngine = (() => {
+  const openRouterKey = process.env.OPENROUTER_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
+  
+  console.log('Initializing analysis engine:', {
+    openRouterAvailable: !!openRouterKey,
+    geminiAvailable: !!geminiKey,
+    openRouterLength: openRouterKey?.length || 0,
+    geminiLength: geminiKey?.length || 0
+  });
+  
+  if (!openRouterKey || !geminiKey) {
+    console.warn('Analysis engine not initialized - missing API keys:', {
+      openRouter: !!openRouterKey,
+      gemini: !!geminiKey
+    });
+    return null;
+  }
+  
+  try {
+    return new AnalysisEngine();
+  } catch (error) {
+    console.error('Failed to create analysis engine:', error);
+    return null;
+  }
+})();

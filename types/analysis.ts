@@ -45,10 +45,16 @@ export interface ATSAnalysis {
 
 export interface JobDescription {
   content: string;
+  jobTitle: string;
+  company: string;
   extractedKeywords: string[];
   requiredSkills: string[];
-  experienceLevel: string;
-  jobTitle: string;
+  preferredSkills: string[];
+  experienceLevel: 'entry' | 'mid' | 'senior' | 'executive';
+  location: string;
+  salaryRange: string;
+  benefits: string[];
+  requirements: string[];
 }
 
 export interface GrammarAnalysisResult {

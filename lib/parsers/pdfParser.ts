@@ -2,18 +2,12 @@ import { performanceMonitor } from "@/lib/utils/performanceMonitor";
 
 // Dynamic import for client-side only
 let pdfjsLib: typeof import("pdfjs-dist") | null = null;
-let PDFDocumentProxy: any = null;
-let PDFPageProxy: any = null;
 
 // Initialize PDF.js only on client side
 const initPDFJS = async () => {
   if (typeof window !== "undefined" && !pdfjsLib) {
     pdfjsLib = await import("pdfjs-dist");
-    const types = await import("pdfjs-dist");
-    PDFDocumentProxy = types.PDFDocumentProxy;
-    PDFPageProxy = types.PDFPageProxy;
-
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
   }
 };
 
@@ -159,7 +153,7 @@ export class PDFParser {
 
         for (let pageNum = 1; pageNum <= pageCount; pageNum++) {
           try {
-            const page: any = await pdfDocument.getPage(pageNum);
+            const page: unknown = await pdfDocument.getPage(pageNum);
             const textContent = await page.getTextContent();
 
             // Combine text items with proper spacing

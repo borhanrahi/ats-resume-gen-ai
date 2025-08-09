@@ -2,11 +2,11 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { ArrowLeft, FileText, Briefcase, Zap, Shield } from 'lucide-react';
+import { ArrowLeft, FileText, Briefcase, Zap, Shield, CheckCircle2 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ClientOnly } from '@/components/ClientOnly';
 import DocumentUploader from '@/components/upload/DocumentUploader';
-import SimpleUploader from '@/components/upload/SimpleUploader';
+import SimpleFileUploader from '@/components/upload/SimpleFileUploader';
 import JobDescriptionUploader from '@/components/upload/JobDescriptionUploader';
 import { UsageGuard } from '@/components/analysis/UsageGuard';
 import { UsageDisplay } from '@/components/analysis/UsageDisplay';
@@ -53,7 +53,13 @@ function AnalyzePageContent() {
 
   try {
     const usageResult = useUsageTracking();
-    usage = usageResult.usage || usage;
+    if (usageResult.usage) {
+      usage = {
+        count: usageResult.usage.dailyCount,
+        dailyCount: usageResult.usage.dailyCount,
+        totalAnalyses: usageResult.usage.totalAnalyses
+      };
+    }
   } catch (error) {
     console.error('Error loading usage data:', error);
   }
@@ -64,7 +70,8 @@ function AnalyzePageContent() {
   }, []);
 
   // Handle resume upload
-  const handleResumeUpload = (result: { file: File; content: string }) => {
+  const handleResumeUpload = (result: { file: File; content: string; metadata: { fileName: string; fileType: string; uploadDate: Date; wordCount: number; fileSize: number }; parseResult: { content: string; metadata: { fileName: string; fileType: string; uploadDate: Date; wordCount: number } } }) => {
+    console.log('Resume upload completed:', result);
     setState(prev => ({
       ...prev,
       resumeFile: result.file,
@@ -125,27 +132,38 @@ function AnalyzePageContent() {
       });
 
       if (!response.ok) {
-        throw new Error('Analysis failed');
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error(errorData.error || 'Analysis failed');
       }
 
       const result = await response.json();
+      console.log('Analysis successful:', result);
       
-      setState(prev => ({ ...prev, progress: 100 }));
+      setState(prev => ({ 
+        ...prev, 
+        progress: 100,
+        step: 'complete'
+      }));
       
-      // Store result in localStorage for results page
+      // Store result in localStorage for future use
       if (result.result) {
         localStorage.setItem('latestAnalysis', JSON.stringify(result.result));
       }
       
-      // Navigate to results page
+      // Show success message instead of navigating
       setTimeout(() => {
-        router.push('/results');
+        alert(`Analysis Complete! 
+Score: ${result.result?.analysis?.score || 'N/A'}/100
+Check the browser console for full results.`);
       }, 500);
 
     } catch (error) {
+      console.error('Analysis error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Analysis failed. Please try again.';
       setState(prev => ({
         ...prev,
-        error: 'Analysis failed. Please try again.',
+        error: errorMessage,
         step: 'upload',
         progress: 0
       }));
@@ -301,26 +319,10 @@ function AnalyzePageContent() {
                   </div>
                 </div>
               }>
-                <SimpleUploader
-                  onFileSelect={(file) => {
-                    // Simple file selection handler for testing
-                    setState(prev => ({
-                      ...prev,
-                      resumeFile: file,
-                      resumeContent: 'Test content from ' + file.name,
-                      error: null
-                    }));
-                  }}
-                  onError={(error) => setState(prev => ({ ...prev, error }))}
-                />
-                
-                {/* Original uploader - commented for testing */}
-                {/* <DocumentUploader
+                <SimpleFileUploader
                   onUploadComplete={handleResumeUpload}
                   onUploadError={(error) => setState(prev => ({ ...prev, error }))}
-                  className="w-full"
-                  showPreview={true}
-                /> */}
+                />
               </ClientOnly>
             </div>
 
@@ -372,6 +374,29 @@ function AnalyzePageContent() {
                   {state.progress >= 60 && state.progress < 90 && 'Generating recommendations...'}
                   {state.progress >= 90 && 'Finalizing results...'}
                 </p>
+              </div>
+            )}
+
+            {/* Analysis Complete */}
+            {state.step === 'complete' && (
+              <div className="space-y-4 p-6 bg-green-50 border border-green-200 rounded-xl">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
+                    <CheckCircle2 className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-green-800 mb-2">
+                    Analysis Complete! 🎉
+                  </h3>
+                  <p className="text-sm text-green-700 mb-4">
+                    Your resume has been successfully analyzed. Check the browser console for detailed results.
+                  </p>
+                  <button
+                    onClick={() => setState(prev => ({ ...prev, step: 'upload', progress: 0, resumeFile: null, resumeContent: null }))}
+                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+                  >
+                    Analyze Another Resume
+                  </button>
+                </div>
               </div>
             )}
 

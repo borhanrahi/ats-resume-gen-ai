@@ -77,7 +77,11 @@ class PerformanceMonitor {
    * Initialize performance monitoring
    */
   private initializeMonitoring(): void {
-    if (typeof window === 'undefined') return;
+    // Only initialize browser-specific monitoring on client side
+    if (typeof window === 'undefined') {
+      this.isMonitoring = false;
+      return;
+    }
 
     this.isMonitoring = true;
     this.setupCoreWebVitalsMonitoring();
@@ -238,6 +242,9 @@ class PerformanceMonitor {
    * Update a specific metric
    */
   private updateMetric(metric: keyof PerformanceMetrics, value: number): void {
+    // Only update metrics on client side
+    if (typeof window === 'undefined') return;
+    
     this.metrics[metric] = value;
     this.checkThreshold(metric, value);
     this.recordEntry();
@@ -280,8 +287,8 @@ class PerformanceMonitor {
       id: this.generateEntryId(),
       timestamp: Date.now(),
       metrics: { ...this.metrics },
-      userAgent: navigator.userAgent,
-      url: window.location.href,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server',
+      url: typeof window !== 'undefined' ? window.location.href : 'server',
       sessionId: this.sessionId,
     };
 
@@ -345,17 +352,24 @@ class PerformanceMonitor {
    * Track document parsing performance
    */
   trackDocumentParsePerformance<T>(operation: () => Promise<T>): Promise<T> {
-    const startTime = performance.now();
+    // Use Date.now() as fallback for server-side
+    const startTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
     
     return operation().then(
       (result) => {
-        const duration = performance.now() - startTime;
-        this.updateMetric('documentParseTime', duration);
+        const endTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
+        const duration = endTime - startTime;
+        if (typeof window !== 'undefined') {
+          this.updateMetric('documentParseTime', duration);
+        }
         return result;
       },
       (error) => {
-        const duration = performance.now() - startTime;
-        this.updateMetric('documentParseTime', duration);
+        const endTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
+        const duration = endTime - startTime;
+        if (typeof window !== 'undefined') {
+          this.updateMetric('documentParseTime', duration);
+        }
         throw error;
       }
     );
@@ -583,7 +597,7 @@ export const performanceUtils = {
     fn: T,
     componentName: string
   ): T => {
-    return ((...args: any[]) => {
+    return ((...args: unknown[]) => {
       return performanceMonitor.trackComponentPerformance(
         componentName,
         async () => fn(...args)
